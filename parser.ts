@@ -22,7 +22,7 @@ type Token =
     | { type: TokenType.Quoted; text: string }
   );
 
-const RE_TOKENIZER = /"(.*)"|(\S+?)(?:\s(?!\n)+|$)|\n/mg;
+const RE_TOKENIZER = /"(.*?)"|(\S+?)(?:\s(?!\n)+|$)|\n/mg;
 
 export function* tokenize(source: string): Generator<Token> {
   let line = 1, linePos = -1;
@@ -46,7 +46,7 @@ export function* tokenize(source: string): Generator<Token> {
 
 export function parse(source: string): CueSheeet {
   for (const token of tokenize(stripBOM(source))) {
-    //
+    console.log(token)
   }
 
   const sheet: CueSheeet = {};
