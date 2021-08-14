@@ -9,6 +9,7 @@ function stripBOM(text: string): string {
 }
 
 enum TokenType {
+  EOF,
   LineBreak,
   Unquoted,
   Quoted,
@@ -17,6 +18,7 @@ enum TokenType {
 type Token =
   & { pos: number; line: number; column: number }
   & (
+    | { type: TokenType.EOF }
     | { type: TokenType.LineBreak }
     | { type: TokenType.Unquoted; text: string }
     | { type: TokenType.Quoted; text: string }
@@ -24,7 +26,9 @@ type Token =
 
 const RE_TOKENIZER = /"(.*?)"|(\S+?)(?:\s(?!\n)+|$)|\n/mg;
 
-export function* tokenize(source: string): Generator<Token> {
+type TokenStream = Generator<Token, Token>;
+
+export function* tokenize(source: string): TokenStream {
   let line = 1, linePos = -1;
   for (const matches of source.matchAll(RE_TOKENIZER)) {
     const index = matches.index!;
@@ -42,6 +46,8 @@ export function* tokenize(source: string): Generator<Token> {
       yield { pos: index, line, column, type: TokenType.Unquoted, text };
     }
   }
+
+  return { pos: source.length, line: -1, column: -1, type: TokenType.EOF };
 }
 
 export function parse(source: string): CueSheeet {
