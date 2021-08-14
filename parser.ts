@@ -15,14 +15,13 @@ enum TokenType {
   Quoted,
 }
 
-type Token =
-  & { pos: number; line: number; column: number }
-  & (
-    | { type: TokenType.EOF }
-    | { type: TokenType.LineBreak }
-    | { type: TokenType.Unquoted; text: string }
-    | { type: TokenType.Quoted; text: string }
-  );
+type BaseToken = { pos: number; line: number; column: number };
+type TokenEOF = BaseToken & { type: TokenType.EOF };
+type TokenLineBreak = BaseToken & { type: TokenType.LineBreak };
+type TokenUnquoted = BaseToken & { type: TokenType.Unquoted; text: string };
+type TokenQuoted = BaseToken & { type: TokenType.Quoted; text: string };
+
+type Token = TokenEOF | TokenLineBreak | TokenUnquoted | TokenQuoted;
 
 const RE_TOKENIZER = /"(.*?)"|(\S+?)(?:\s(?!\n)+|$)|\n/mg;
 
