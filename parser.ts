@@ -103,14 +103,16 @@ function expectToken(
   return token;
 }
 
+type ParsingError = { message: string; line: number; column: number };
+
 interface ParserOptions {
   fatal?: boolean;
 }
 
-export function parse(source: string, options: ParserOptions = {}): CueSheeet {
+export function parse(source: string, options: ParserOptions = {}) {
   const tokens = tokenize(stripBOM(source));
 
-  const errors: Array<{ message: string; line: number; column: number }> = [];
+  const errors: ParsingError[] = [];
   const raise: Context["raise"] = options.fatal
     ? ((message, errorAt) => {
       throw new Error(`${message} (${errorAt.line}:${errorAt.column})`);
@@ -139,7 +141,7 @@ export function parse(source: string, options: ParserOptions = {}): CueSheeet {
     }
   }
 
-  return context.sheet;
+  return { sheet: context.sheet, errors };
 }
 
 function parseCommand(tokens: TokenStream, context: Context) {
