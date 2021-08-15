@@ -1,3 +1,4 @@
+import { ErrorKind, translateErrorMessage } from "./errors.ts";
 import type { CueSheeet } from "./types.ts";
 
 function stripBOM(text: string): string {
@@ -60,12 +61,9 @@ interface Context {
 
   /**
    * Raise a parsing error.
-   *
-   * @param message error message
-   * @param errorAt error location
    */
   raise(
-    message: string,
+    kind: ErrorKind,
     errorAt: { pos: number; line: number; column: number },
   ): void;
 }
@@ -97,13 +95,26 @@ function expectToken(
 ): Token {
   const token = tokens.next().value;
   if (token.type !== type) {
-    context.raise(`Expect token '${TokenType[type]}'`, token);
+    switch (type) {
+      case TokenType.EOF:
+        context.raise(ErrorKind.ExpectTokenEOF, token);
+        break;
+      case TokenType.LineBreak:
+        context.raise(ErrorKind.ExpectTokenLineBreak, token);
+        break;
+      case TokenType.Unquoted:
+        context.raise(ErrorKind.ExpectTokenUnquoted, token);
+        break;
+      case TokenType.Quoted:
+        context.raise(ErrorKind.ExpectTokenQuoted, token);
+        break;
+    }
   }
 
   return token;
 }
 
-type ParsingError = { message: string; line: number; column: number };
+type ParsingError = { kind: ErrorKind; line: number; column: number };
 
 interface ParserOptions {
   fatal?: boolean;
@@ -114,11 +125,13 @@ export function parse(source: string, options: ParserOptions = {}) {
 
   const errors: ParsingError[] = [];
   const raise: Context["raise"] = options.fatal
-    ? ((message, errorAt) => {
-      throw new Error(`${message} (${errorAt.line}:${errorAt.column})`);
+    ? ((kind, errorAt) => {
+      throw new Error(
+        `${translateErrorMessage(kind)} (${errorAt.line}:${errorAt.column})`,
+      );
     })
-    : ((message, errorAt) => {
-      errors.push({ message, line: errorAt.line, column: errorAt.column });
+    : ((kind, errorAt) => {
+      errors.push({ kind, line: errorAt.line, column: errorAt.column });
     });
 
   const context: Context = {
@@ -137,7 +150,7 @@ export function parse(source: string, options: ParserOptions = {}) {
     if (nextToken.value.type === TokenType.EOF || nextToken.done) {
       break;
     } else if (nextToken.value.type !== TokenType.LineBreak) {
-      raise("Expect line break or end of file.", nextToken.value);
+      raise(ErrorKind.ExpectEnding, nextToken.value);
     }
   }
 
@@ -158,11 +171,11 @@ function parseCatalog(tokens: TokenStream, context: Context) {
   const tokenCatalog = expectToken(tokens, TokenType.Unquoted, context);
 
   if (!RE_CATALOG.test(tokenCatalog.text)) {
-    context.raise("Catalog must be 13 digits.", tokenCatalog);
+    context.raise(ErrorKind.InvalidCatalogFormat, tokenCatalog);
   }
 
   if (context.sheet.catalog) {
-    context.raise("Catalog can appear only once in one file.", tokenCatalog);
+    context.raise(ErrorKind.DuplicatedCatalog, tokenCatalog);
   }
 
   return { catalog: tokenCatalog.text };
