@@ -23,7 +23,7 @@ type TokenQuoted = BaseToken & { type: TokenType.Quoted; text: string };
 
 type Token = TokenEOF | TokenLineBreak | TokenUnquoted | TokenQuoted;
 
-const RE_TOKENIZER = /"(.*?)"|(\S+?)(?:\s(?!\n)+|$)|\n/mg;
+const RE_TOKENIZER = /"(.*?)"|(\S+?)(?:[^\S\n]+|(?=\n)|$)|\n/g;
 
 type TokenStream = Generator<Token, Token>;
 
