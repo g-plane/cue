@@ -143,23 +143,29 @@ export function parse(source: string, options: ParserOptions = {}) {
   };
 
   while (true) {
-    const command = parseCommand(tokens, context);
-    context.sheet = { ...context.sheet, ...command };
-
-    const nextToken = tokens.next();
-    if (nextToken.value.type === TokenType.EOF || nextToken.done) {
+    const next = tokens.next();
+    const token = next.value;
+    if (token.type === TokenType.Unquoted) {
+      const command = parseCommand(token.text, tokens, context);
+      context.sheet = { ...context.sheet, ...command };
+    } else if (token.type === TokenType.LineBreak) {
+      continue;
+    } else if (token.type === TokenType.EOF || next.done) {
       break;
-    } else if (nextToken.value.type !== TokenType.LineBreak) {
-      raise(ErrorKind.ExpectEnding, nextToken.value);
+    } else {
+      raise(ErrorKind.UnexpectedToken, token);
     }
   }
 
   return { sheet: context.sheet, errors };
 }
 
-function parseCommand(tokens: TokenStream, context: Context) {
-  const tokenCommandName = expectToken(tokens, TokenType.Unquoted, context);
-  switch (tokenCommandName.text.toUpperCase()) {
+function parseCommand(
+  commandName: string,
+  tokens: TokenStream,
+  context: Context,
+) {
+  switch (commandName.toUpperCase()) {
     case "CATALOG":
       return parseCatalog(tokens, context);
   }

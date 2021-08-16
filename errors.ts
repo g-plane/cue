@@ -4,7 +4,7 @@ export enum ErrorKind {
   ExpectTokenLineBreak,
   ExpectTokenUnquoted,
   ExpectTokenQuoted,
-  ExpectEnding,
+  UnexpectedToken,
   InvalidCatalogFormat,
   DuplicatedCatalog,
 }
@@ -19,8 +19,8 @@ export function translateErrorMessage(kind: ErrorKind): string {
       return "Expect an unquoted string.";
     case ErrorKind.ExpectTokenQuoted:
       return "Expect a quoted string.";
-    case ErrorKind.ExpectEnding:
-      return "Expect line break or end of file.";
+    case ErrorKind.UnexpectedToken:
+      return "Unexpected token.";
     case ErrorKind.InvalidCatalogFormat:
       return "Catalog must be 13 digits.";
     case ErrorKind.DuplicatedCatalog:
