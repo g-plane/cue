@@ -7,6 +7,16 @@ Deno.test("parse valid catalog", () => {
     sheet: { catalog: "1234567890123" },
     errors: [],
   });
+
+  assertEquals(parse(`catalog 1234567890123`), {
+    sheet: { catalog: "1234567890123" },
+    errors: [],
+  });
+
+  assertEquals(parse(`Catalog 1234567890123`), {
+    sheet: { catalog: "1234567890123" },
+    errors: [],
+  });
 });
 
 Deno.test("invalid catalog format", () => {
@@ -22,12 +32,13 @@ Deno.test("invalid catalog format", () => {
 });
 
 Deno.test("duplicated catalog", () => {
-  const source = `CATALOG 1234567890123
+  const source = `
+CATALOG 1234567890123
 CATALOG 0987654321098
 `;
 
   assertEquals(parse(source), {
     sheet: { catalog: "0987654321098" },
-    errors: [{ kind: ErrorKind.DuplicatedCatalog, line: 2, column: 1 }],
+    errors: [{ kind: ErrorKind.DuplicatedCatalog, line: 3, column: 1 }],
   });
 });
