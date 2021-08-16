@@ -146,7 +146,7 @@ export function parse(source: string, options: ParserOptions = {}) {
     const next = tokens.next();
     const token = next.value;
     if (token.type === TokenType.Unquoted) {
-      const command = parseCommand(token.text, tokens, context);
+      const command = parseCommand(token, tokens, context);
       context.sheet = { ...context.sheet, ...command };
     } else if (token.type === TokenType.LineBreak) {
       continue;
@@ -161,12 +161,15 @@ export function parse(source: string, options: ParserOptions = {}) {
 }
 
 function parseCommand(
-  commandName: string,
+  commandToken: TokenUnquoted,
   tokens: TokenStream,
   context: Context,
 ) {
-  switch (commandName.toUpperCase()) {
+  switch (commandToken.text.toUpperCase()) {
     case "CATALOG":
+      if (context.sheet.catalog) {
+        context.raise(ErrorKind.DuplicatedCatalog, commandToken);
+      }
       return parseCatalog(tokens, context);
   }
 }
@@ -178,10 +181,6 @@ function parseCatalog(tokens: TokenStream, context: Context) {
 
   if (!RE_CATALOG.test(tokenCatalog.text)) {
     context.raise(ErrorKind.InvalidCatalogFormat, tokenCatalog);
-  }
-
-  if (context.sheet.catalog) {
-    context.raise(ErrorKind.DuplicatedCatalog, tokenCatalog);
   }
 
   return { catalog: tokenCatalog.text };

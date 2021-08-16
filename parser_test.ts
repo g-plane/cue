@@ -21,6 +21,6 @@ CATALOG 0987654321098
 
   assertEquals(parse(source), {
     sheet: { catalog: "0987654321098" },
-    errors: [{ kind: ErrorKind.DuplicatedCatalog, line: 2, column: 9 }],
+    errors: [{ kind: ErrorKind.DuplicatedCatalog, line: 2, column: 1 }],
   });
 });
