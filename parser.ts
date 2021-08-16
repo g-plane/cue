@@ -145,13 +145,13 @@ export function parse(source: string, options: ParserOptions = {}) {
   while (true) {
     const next = tokens.next();
     const token = next.value;
-    if (token.type === TokenType.Unquoted) {
+    if (next.done || token.type === TokenType.EOF) {
+      break;
+    } else if (token.type === TokenType.Unquoted) {
       const command = parseCommand(token, tokens, context);
       context.sheet = { ...context.sheet, ...command };
     } else if (token.type === TokenType.LineBreak) {
       continue;
-    } else if (token.type === TokenType.EOF || next.done) {
-      break;
     } else {
       raise(ErrorKind.UnexpectedToken, token);
     }
@@ -171,12 +171,17 @@ function parseCommand(
         context.raise(ErrorKind.DuplicatedCatalog, commandToken);
       }
       return parseCatalog(tokens, context);
+    case "CDTEXTFILE":
+      return parseCDTextFile(tokens, context);
   }
 }
 
 const RE_CATALOG = /^\d{13}$/;
 
-function parseCatalog(tokens: TokenStream, context: Context) {
+function parseCatalog(
+  tokens: TokenStream,
+  context: Context,
+): Pick<CueSheeet, "catalog"> {
   const tokenCatalog = expectToken(tokens, TokenType.Unquoted, context);
 
   if (!RE_CATALOG.test(tokenCatalog.text)) {
@@ -184,4 +189,17 @@ function parseCatalog(tokens: TokenStream, context: Context) {
   }
 
   return { catalog: tokenCatalog.text };
+}
+
+function parseCDTextFile(
+  tokens: TokenStream,
+  context: Context,
+): Pick<CueSheeet, "CDTextFile"> {
+  const token = tokens.next().value;
+  if (token.type !== TokenType.Unquoted && token.type !== TokenType.Quoted) {
+    context.raise(ErrorKind.MissingArguments, token);
+    return {};
+  }
+
+  return { CDTextFile: token.text };
 }

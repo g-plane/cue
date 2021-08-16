@@ -42,3 +42,30 @@ CATALOG 0987654321098
     errors: [{ kind: ErrorKind.DuplicatedCatalog, line: 3, column: 1 }],
   });
 });
+
+Deno.test("parse valid CD Text File", () => {
+  assertEquals(parse(`CDTEXTFILE C:\\a.cdt`), {
+    sheet: { CDTextFile: "C:\\a.cdt" },
+    errors: [],
+  });
+
+  assertEquals(parse(`cdtextfile /mnt/c/a.cdt`), {
+    sheet: { CDTextFile: "/mnt/c/a.cdt" },
+    errors: [],
+  });
+
+  assertEquals(
+    parse(`CdTextFile "C:\\Documents and Settings\\Administrator\\a.cdt"`),
+    {
+      sheet: { CDTextFile: "C:\\Documents and Settings\\Administrator\\a.cdt" },
+      errors: [],
+    },
+  );
+});
+
+Deno.test("missing CD Text File argument", () => {
+  assertEquals(parse(`CDTEXTFILE `), {
+    sheet: {},
+    errors: [{ kind: ErrorKind.MissingArguments, line: -1, column: -1 }],
+  });
+});

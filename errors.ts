@@ -5,6 +5,7 @@ export enum ErrorKind {
   ExpectTokenUnquoted,
   ExpectTokenQuoted,
   UnexpectedToken,
+  MissingArguments,
   InvalidCatalogFormat,
   DuplicatedCatalog,
 }
@@ -21,6 +22,8 @@ export function translateErrorMessage(kind: ErrorKind): string {
       return "Expect a quoted string.";
     case ErrorKind.UnexpectedToken:
       return "Unexpected token.";
+    case ErrorKind.MissingArguments:
+      return "Missing arguments.";
     case ErrorKind.InvalidCatalogFormat:
       return "Catalog must be 13 digits.";
     case ErrorKind.DuplicatedCatalog:
