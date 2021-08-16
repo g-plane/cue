@@ -2,6 +2,13 @@ import { assertEquals } from "https://deno.land/std@0.104.0/testing/asserts.ts";
 import { ErrorKind } from "./errors.ts";
 import { parse } from "./parser.ts";
 
+Deno.test("parse valid catalog", () => {
+  assertEquals(parse(`CATALOG 1234567890123`), {
+    sheet: { catalog: "1234567890123" },
+    errors: [],
+  });
+});
+
 Deno.test("invalid catalog format", () => {
   assertEquals(parse(`CATALOG abcdefghijklm`), {
     sheet: { catalog: "abcdefghijklm" },
