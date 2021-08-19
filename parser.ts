@@ -198,6 +198,7 @@ function parseCommand(
     case "CDTEXTFILE":
       return parseCDTextFile(tokens, context);
     case "FILE":
+      // TODO: add a check: FILE commands must appear before any other command, except CATALOG and CDTEXTFILE.
       return parseFile(tokens, context);
   }
 }
