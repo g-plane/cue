@@ -56,8 +56,25 @@ export function* tokenize(source: string): TokenStream {
   };
 }
 
+enum ParsedCommand {
+  CATALOG = 1 << 1,
+  CDTEXTFILE = 1 << 2,
+  FILE = 1 << 3,
+  FLAGS = 1 << 4,
+  INDEX = 1 << 5,
+  ISRC = 1 << 6,
+  PERFORMER = 1 << 7,
+  POSTGAP = 1 << 8,
+  PREGAP = 1 << 9,
+  REM = 1 << 10,
+  SONGWRITER = 1 << 11,
+  TITLE = 1 << 12,
+  TRACK = 1 << 13,
+}
+
 interface ParserState {
   inTrack: boolean;
+  parsedCommand: number;
 }
 
 interface Context {
@@ -162,6 +179,7 @@ export function parse(source: string, options: ParserOptions = {}) {
     sheet: {},
     state: {
       inTrack: false,
+      parsedCommand: 0,
     },
     raise,
   };
@@ -189,16 +207,27 @@ function parseCommand(
   tokens: TokenStream,
   context: Context,
 ) {
-  switch (commandToken.text.toUpperCase()) {
+  const command = commandToken.text.toUpperCase();
+
+  switch (command) {
     case "CATALOG":
-      if (context.sheet.catalog) {
+      if (context.state.parsedCommand & ParsedCommand.CATALOG) {
         context.raise(ErrorKind.DuplicatedCatalog, commandToken);
       }
+      context.state.parsedCommand |= ParsedCommand.CATALOG;
       return parseCatalog(tokens, context);
     case "CDTEXTFILE":
+      context.state.parsedCommand |= ParsedCommand.CDTEXTFILE;
       return parseCDTextFile(tokens, context);
     case "FILE":
-      // TODO: add a check: FILE commands must appear before any other command, except CATALOG and CDTEXTFILE.
+      if (
+        context.state.parsedCommand &&
+        !(context.state.parsedCommand & ParsedCommand.CATALOG) &&
+        !(context.state.parsedCommand & ParsedCommand.CDTEXTFILE)
+      ) {
+        context.raise(ErrorKind.InvalidFileCommandLocation, commandToken);
+      }
+      context.state.parsedCommand |= ParsedCommand.FILE;
       return parseFile(tokens, context);
   }
 }
