@@ -127,8 +127,9 @@ export function parse(source: string, options: ParserOptions = {}) {
   const errors: ParsingError[] = [];
   const raise: Context["raise"] = options.fatal
     ? ((kind, errorAt) => {
-      throw new Error(
+      throw new SyntaxError(
         `${translateErrorMessage(kind)} (${errorAt.line}:${errorAt.column})`,
+        { cause: { kind, errorAt } },
       );
     })
     : ((kind, errorAt) => {
