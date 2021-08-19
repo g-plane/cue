@@ -57,19 +57,19 @@ export function* tokenize(source: string): TokenStream {
 }
 
 enum ParsedCommand {
-  CATALOG = 1 << 1,
-  CDTEXTFILE = 1 << 2,
-  FILE = 1 << 3,
-  FLAGS = 1 << 4,
-  INDEX = 1 << 5,
-  ISRC = 1 << 6,
-  PERFORMER = 1 << 7,
-  POSTGAP = 1 << 8,
-  PREGAP = 1 << 9,
-  REM = 1 << 10,
-  SONGWRITER = 1 << 11,
-  TITLE = 1 << 12,
-  TRACK = 1 << 13,
+  CATALOG = 1,
+  CDTEXTFILE = 1 << 1,
+  FILE = 1 << 2,
+  FLAGS = 1 << 3,
+  INDEX = 1 << 4,
+  ISRC = 1 << 5,
+  PERFORMER = 1 << 6,
+  POSTGAP = 1 << 7,
+  PREGAP = 1 << 8,
+  REM = 1 << 9,
+  SONGWRITER = 1 << 10,
+  TITLE = 1 << 11,
+  TRACK = 1 << 12,
 }
 
 interface ParserState {
