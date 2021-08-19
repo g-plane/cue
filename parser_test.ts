@@ -67,7 +67,7 @@ Deno.test("parse valid CD Text File", () => {
 Deno.test("missing CD Text File argument", () => {
   assertEquals(parse(`CDTEXTFILE `), {
     sheet: {},
-    errors: [{ kind: ErrorKind.MissingArguments, line: -1, column: -1 }],
+    errors: [{ kind: ErrorKind.MissingArguments, line: 1, column: 12 }],
   });
 });
 
@@ -111,7 +111,7 @@ Deno.test("parse valid FILE command", () => {
 Deno.test("missing FILE command file name argument", () => {
   assertEquals(parse(`FILE `), {
     sheet: {},
-    errors: [{ kind: ErrorKind.MissingArguments, line: -1, column: -1 }],
+    errors: [{ kind: ErrorKind.MissingArguments, line: 1, column: 6 }],
   });
 });
 

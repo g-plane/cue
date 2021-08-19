@@ -48,7 +48,12 @@ export function* tokenize(source: string): TokenStream {
     }
   }
 
-  return { pos: source.length, line: -1, column: -1, type: TokenType.EOF };
+  return {
+    pos: source.length,
+    line,
+    column: source.length - linePos,
+    type: TokenType.EOF,
+  };
 }
 
 interface ParserState {
