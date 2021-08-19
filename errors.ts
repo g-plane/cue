@@ -8,6 +8,7 @@ export enum ErrorKind {
   MissingArguments,
   InvalidCatalogFormat,
   DuplicatedCatalog,
+  UnknownFileType,
 }
 
 export function translateErrorMessage(kind: ErrorKind): string {
@@ -28,6 +29,8 @@ export function translateErrorMessage(kind: ErrorKind): string {
       return "Catalog must be 13 digits.";
     case ErrorKind.DuplicatedCatalog:
       return "Catalog can appear only once in one cue sheet.";
+    case ErrorKind.UnknownFileType:
+      return "Unknown file type. Only 'BINARY', 'MOTOROLA', 'AIFF', 'WAVE' and 'MP3' are allowed.";
     default:
       return "(unknown error)";
   }

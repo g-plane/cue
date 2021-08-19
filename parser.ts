@@ -1,4 +1,5 @@
 import { ErrorKind, translateErrorMessage } from "./errors.ts";
+import { FileType } from "./types.ts";
 import type { CueSheeet } from "./types.ts";
 
 function stripBOM(text: string): string {
@@ -173,6 +174,8 @@ function parseCommand(
       return parseCatalog(tokens, context);
     case "CDTEXTFILE":
       return parseCDTextFile(tokens, context);
+    case "FILE":
+      return parseFile(tokens, context);
   }
 }
 
@@ -202,4 +205,38 @@ function parseCDTextFile(
   }
 
   return { CDTextFile: token.text };
+}
+
+function parseFile(
+  tokens: TokenStream,
+  context: Context,
+): Pick<CueSheeet, "file"> {
+  const fileNameToken = tokens.next().value;
+  if (
+    fileNameToken.type !== TokenType.Unquoted &&
+    fileNameToken.type !== TokenType.Quoted
+  ) {
+    context.raise(ErrorKind.MissingArguments, fileNameToken);
+    return {};
+  }
+
+  const fileTypeToken = expectToken(tokens, TokenType.Unquoted, context);
+  let fileType: FileType;
+  const typeText = fileTypeToken.text.toUpperCase();
+  if (typeText === "BINARY") {
+    fileType = FileType.Binary;
+  } else if (typeText === "MOTOROLA") {
+    fileType = FileType.Motorola;
+  } else if (typeText === "AIFF") {
+    fileType = FileType.Aiff;
+  } else if (typeText === "WAVE") {
+    fileType = FileType.Wave;
+  } else if (typeText === "MP3") {
+    fileType = FileType.Mp3;
+  } else {
+    context.raise(ErrorKind.UnknownFileType, fileTypeToken);
+    return {};
+  }
+
+  return { file: { name: fileNameToken.text, type: fileType } };
 }
