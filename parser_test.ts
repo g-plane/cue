@@ -44,6 +44,13 @@ CATALOG 0987654321098
   });
 });
 
+Deno.test("missing catalog argument", () => {
+  assertEquals(parse(`CATALOG`), {
+    sheet: {},
+    errors: [{ kind: ErrorKind.ExpectTokenUnquoted, line: 1, column: 8 }],
+  });
+});
+
 Deno.test("parse valid CD Text File", () => {
   assertEquals(parse(`CDTEXTFILE C:\\a.cdt`), {
     sheet: { CDTextFile: "C:\\a.cdt" },
@@ -115,9 +122,23 @@ Deno.test("missing FILE command file name argument", () => {
   });
 });
 
+Deno.test("missing FILE command file type argument", () => {
+  assertEquals(parse(`FILE audio.wav`), {
+    sheet: { file: { name: "audio.wav", type: FileType.Unknown } },
+    errors: [
+      { kind: ErrorKind.ExpectTokenUnquoted, line: 1, column: 15 },
+      {
+        kind: ErrorKind.UnknownFileType,
+        line: 1,
+        column: 15,
+      },
+    ],
+  });
+});
+
 Deno.test("invalid FILE command file type argument", () => {
   assertEquals(parse(`FILE audio.wav WAV`), {
-    sheet: {},
+    sheet: { file: { name: "audio.wav", type: FileType.Unknown } },
     errors: [{ kind: ErrorKind.UnknownFileType, line: 1, column: 16 }],
   });
 });

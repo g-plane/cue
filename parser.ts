@@ -107,13 +107,30 @@ function expectToken(
         break;
       case TokenType.LineBreak:
         context.raise(ErrorKind.ExpectTokenLineBreak, token);
-        break;
+        return {
+          pos: token.pos,
+          line: token.line,
+          column: token.column,
+          type: TokenType.LineBreak,
+        };
       case TokenType.Unquoted:
         context.raise(ErrorKind.ExpectTokenUnquoted, token);
-        break;
+        return {
+          pos: token.pos,
+          line: token.line,
+          column: token.column,
+          type: TokenType.Unquoted,
+          text: "",
+        };
       case TokenType.Quoted:
         context.raise(ErrorKind.ExpectTokenQuoted, token);
-        break;
+        return {
+          pos: token.pos,
+          line: token.line,
+          column: token.column,
+          type: TokenType.Quoted,
+          text: "",
+        };
     }
   }
 
@@ -193,6 +210,12 @@ function parseCatalog(
 ): Pick<CueSheeet, "catalog"> {
   const tokenCatalog = expectToken(tokens, TokenType.Unquoted, context);
 
+  // An unquoted token or a quoted token won't be empty.
+  // It's for tolerant parsing that checking if it's an empty string.
+  if (tokenCatalog.text === "") {
+    return {};
+  }
+
   if (!RE_CATALOG.test(tokenCatalog.text)) {
     context.raise(ErrorKind.InvalidCatalogFormat, tokenCatalog);
   }
@@ -241,7 +264,7 @@ function parseFile(
     fileType = FileType.Mp3;
   } else {
     context.raise(ErrorKind.UnknownFileType, fileTypeToken);
-    return {};
+    return { file: { name: fileNameToken.text, type: FileType.Unknown } };
   }
 
   return { file: { name: fileNameToken.text, type: fileType } };
