@@ -5,6 +5,13 @@ export type CueSheeet = {
     name: string;
     type: FileType;
   };
+  flags?: {
+    digitalCopyPermitted: boolean;
+    fourChannelAudio: boolean;
+    preEmphasisEnabled: boolean;
+    /** Serial Copy Management System */
+    scms: boolean;
+  };
 };
 
 export enum FileType {

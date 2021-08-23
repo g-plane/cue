@@ -10,6 +10,11 @@ export enum ErrorKind {
   DuplicatedCatalog,
   InvalidFileCommandLocation,
   UnknownFileType,
+  InvalidFlagsCommandLocation,
+  DuplicatedFlagsCommand,
+  NoFlags,
+  TooManyFlags,
+  UnknownFlag,
 }
 
 export function translateErrorMessage(kind: ErrorKind): string {
@@ -34,6 +39,16 @@ export function translateErrorMessage(kind: ErrorKind): string {
       return "'FILE' commands must appear before any other command, except 'CATALOG' and 'CDTEXTFILE'.";
     case ErrorKind.UnknownFileType:
       return "Unknown file type. Only 'BINARY', 'MOTOROLA', 'AIFF', 'WAVE' and 'MP3' are allowed.";
+    case ErrorKind.InvalidFlagsCommandLocation:
+      return "'FLAGS' command must appear after a 'TRACK' command, but before any 'INDEX' commands.";
+    case ErrorKind.DuplicatedFlagsCommand:
+      return "'FLAGS' command can appear only once in each track.";
+    case ErrorKind.NoFlags:
+      return "'FLAGS' command must specify at least one flag.";
+    case ErrorKind.TooManyFlags:
+      return "Too many flags encountered. It can't have more than four flags.";
+    case ErrorKind.UnknownFlag:
+      return "Unknown flag. Only 'DCP', '4CH', 'PRE' and 'SCMS' are allowed.";
     default:
       return "(unknown error)";
   }

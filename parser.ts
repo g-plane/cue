@@ -242,16 +242,31 @@ function parseCommand(
     case "CDTEXTFILE":
       context.state.parsedCommand |= ParsedCommand.CDTEXTFILE;
       return parseCDTextFile(tokens, context);
-    case "FILE":
+    case "FILE": {
+      const { parsedCommand } = context.state;
       if (
-        context.state.parsedCommand &&
-        !(context.state.parsedCommand & ParsedCommand.CATALOG) &&
-        !(context.state.parsedCommand & ParsedCommand.CDTEXTFILE)
+        parsedCommand &&
+        !(parsedCommand & ParsedCommand.CATALOG) &&
+        !(parsedCommand & ParsedCommand.CDTEXTFILE)
       ) {
         context.raise(ErrorKind.InvalidFileCommandLocation, commandToken);
       }
       context.state.parsedCommand |= ParsedCommand.FILE;
       return parseFile(tokens, context);
+    }
+    case "FLAGS": {
+      const { parsedCommand } = context.state;
+      if (
+        !(parsedCommand & ParsedCommand.TRACK) ||
+        parsedCommand & ParsedCommand.INDEX
+      ) {
+        context.raise(ErrorKind.InvalidFlagsCommandLocation, commandToken);
+      }
+      if (parsedCommand & ParsedCommand.FLAGS) {
+        context.raise(ErrorKind.DuplicatedFlagsCommand, commandToken);
+      }
+      return parseFlags(tokens, context);
+    }
   }
 }
 
@@ -321,4 +336,61 @@ function parseFile(
   }
 
   return { file: { name: fileNameToken.text, type: fileType } };
+}
+
+function parseFlags(
+  tokens: TokenStream,
+  context: Context,
+): Pick<CueSheeet, "flags"> {
+  let digitalCopyPermitted = false;
+  let fourChannelAudio = false;
+  let preEmphasisEnabled = false;
+  let scms = false;
+
+  let encounteredFlagsCount = 0;
+  while (true) {
+    const token = tokens.next().value;
+    if (token.type === TokenType.Unquoted) {
+      if (encounteredFlagsCount === 4) {
+        context.raise(ErrorKind.TooManyFlags, token);
+      } else {
+        switch (token.text) {
+          case "DCP":
+            digitalCopyPermitted = true;
+            break;
+          case "4CH":
+            fourChannelAudio = true;
+            break;
+          case "PRE":
+            preEmphasisEnabled = true;
+            break;
+          case "SCMS":
+            scms = true;
+            break;
+          default:
+            context.raise(ErrorKind.UnknownFlag, token);
+        }
+        encounteredFlagsCount += 1;
+      }
+    } else if (
+      token.type === TokenType.LineBreak || token.type === TokenType.EOF
+    ) {
+      if (encounteredFlagsCount === 0) {
+        context.raise(ErrorKind.NoFlags, token);
+      }
+
+      context.state.skipLineBreak = true;
+
+      return {
+        flags: {
+          digitalCopyPermitted,
+          fourChannelAudio,
+          preEmphasisEnabled,
+          scms,
+        },
+      };
+    } else {
+      context.raise(ErrorKind.UnexpectedToken, token);
+    }
+  }
 }
