@@ -142,3 +142,10 @@ Deno.test("invalid FILE command file type argument", () => {
     errors: [{ kind: ErrorKind.UnknownFileType, line: 1, column: 16 }],
   });
 });
+
+Deno.test("disallow multiple commands on the same line", () => {
+  assertEquals(parse(`CDTEXTFILE cdt.cdt FILE audio.wav WAV`), {
+    sheet: { CDTextFile: "cdt.cdt" },
+    errors: [{ kind: ErrorKind.UnexpectedToken, line: 1, column: 20 }],
+  });
+});

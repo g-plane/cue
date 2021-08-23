@@ -75,6 +75,7 @@ enum ParsedCommand {
 interface ParserState {
   inTrack: boolean;
   parsedCommand: number;
+  skipLineBreak: boolean;
 }
 
 interface Context {
@@ -180,6 +181,7 @@ export function parse(source: string, options: ParserOptions = {}) {
     state: {
       inTrack: false,
       parsedCommand: 0,
+      skipLineBreak: false,
     },
     raise,
   };
@@ -192,6 +194,27 @@ export function parse(source: string, options: ParserOptions = {}) {
     } else if (token.type === TokenType.Unquoted) {
       const command = parseCommand(token, tokens, context);
       context.sheet = { ...context.sheet, ...command };
+
+      if (context.state.skipLineBreak) {
+        context.state.skipLineBreak = false;
+      } else {
+        let next = tokens.next();
+        if (
+          !next.done &&
+          next.value.type !== TokenType.LineBreak &&
+          next.value.type !== TokenType.EOF
+        ) {
+          context.raise(ErrorKind.UnexpectedToken, next.value);
+        }
+
+        while (
+          !next.done &&
+          next.value.type !== TokenType.LineBreak &&
+          next.value.type !== TokenType.EOF
+        ) {
+          next = tokens.next();
+        }
+      }
     } else if (token.type === TokenType.LineBreak) {
       continue;
     } else {
