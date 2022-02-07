@@ -1,6 +1,6 @@
 import { ErrorKind, translateErrorMessage } from "./errors.ts";
 import { FileType } from "./types.ts";
-import type { CueSheeet } from "./types.ts";
+import type { CueSheeet, Index } from "./types.ts";
 
 function stripBOM(text: string): string {
   if (text.charCodeAt(0) === 0xfeff) {
@@ -393,4 +393,32 @@ function parseFlags(
       context.raise(ErrorKind.UnexpectedToken, token);
     }
   }
+}
+
+const RE_TIME = /^\d{2}:\d{2}:\d{2}$/;
+
+function parseIndex(tokens: TokenStream, context: Context): Index {
+  const indexNumberToken = expectToken(tokens, TokenType.Unquoted, context);
+  const number = Number.parseInt(indexNumberToken.text);
+  if (number < 0 || number > 99) {
+    context.raise(ErrorKind.InvalidIndexNumberRange, indexNumberToken);
+  }
+
+  const indexTimeToken = expectToken(tokens, TokenType.Unquoted, context);
+  const matches = RE_TIME.exec(indexTimeToken.text);
+  if (!matches) {
+    context.raise(ErrorKind.InvalidIndexTimeFormat, indexTimeToken);
+    return {
+      number,
+      startingTime: [0, 0, 0],
+    };
+  }
+  return {
+    number,
+    startingTime: [
+      Number.parseInt(matches[1]),
+      Number.parseInt(matches[2]),
+      Number.parseInt(matches[3]),
+    ],
+  };
 }

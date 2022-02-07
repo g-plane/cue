@@ -1,18 +1,14 @@
-export type CueSheeet = {
+export interface CueSheeet {
   catalog?: string;
   CDTextFile?: string;
-  file?: {
-    name: string;
-    type: FileType;
-  };
-  flags?: {
-    digitalCopyPermitted: boolean;
-    fourChannelAudio: boolean;
-    preEmphasisEnabled: boolean;
-    /** Serial Copy Management System */
-    scms: boolean;
-  };
-};
+  file?: File;
+  flags?: Flags;
+}
+
+export interface File {
+  name: string;
+  type: FileType;
+}
 
 export enum FileType {
   /** @internal This shouldn't be used in real world. */
@@ -22,4 +18,17 @@ export enum FileType {
   Aiff,
   Wave,
   Mp3,
+}
+
+export interface Flags {
+  digitalCopyPermitted: boolean;
+  fourChannelAudio: boolean;
+  preEmphasisEnabled: boolean;
+  /** Serial Copy Management System */
+  scms: boolean;
+}
+
+export interface Index {
+  number: number;
+  startingTime: [number, number, number];
 }

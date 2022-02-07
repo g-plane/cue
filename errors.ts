@@ -14,11 +14,15 @@ export enum ErrorKind {
   DuplicatedFlagsCommand,
   NoFlags,
   TooManyFlags,
+  InvalidIndexNumberRange,
+  InvalidIndexTimeFormat,
   UnknownFlag,
 }
 
 export function translateErrorMessage(kind: ErrorKind): string {
   switch (kind) {
+    case ErrorKind.Reserved:
+      throw new TypeError("unreachable code");
     case ErrorKind.ExpectTokenEOF:
       return "Expect end of file.";
     case ErrorKind.ExpectTokenLineBreak:
@@ -49,7 +53,9 @@ export function translateErrorMessage(kind: ErrorKind): string {
       return "Too many flags encountered. It can't have more than four flags.";
     case ErrorKind.UnknownFlag:
       return "Unknown flag. Only 'DCP', '4CH', 'PRE' and 'SCMS' are allowed.";
-    default:
-      return "(unknown error)";
+    case ErrorKind.InvalidIndexNumberRange:
+      return "Index number range must be from 0 to 99.";
+    case ErrorKind.InvalidIndexTimeFormat:
+      return "Index time format must be 'mm:ss:ff'.";
   }
 }
