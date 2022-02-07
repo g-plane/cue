@@ -265,6 +265,7 @@ function parseCommand(
       if (parsedCommand & ParsedCommand.FLAGS) {
         context.raise(ErrorKind.DuplicatedFlagsCommand, commandToken);
       }
+      context.state.parsedCommand |= ParsedCommand.FLAGS;
       return parseFlags(tokens, context);
     }
   }
