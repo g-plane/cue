@@ -193,7 +193,7 @@ export function parse(source: string, options: ParserOptions = {}) {
       break;
     } else if (token.type === TokenType.Unquoted) {
       const command = parseCommand(token, tokens, context);
-      context.sheet = { ...context.sheet, ...command };
+      Object.assign(context.sheet, command);
 
       if (context.state.skipLineBreak) {
         context.state.skipLineBreak = false;
