@@ -177,7 +177,9 @@ export function parse(source: string, options: ParserOptions = {}) {
     });
 
   const context: Context = {
-    sheet: {},
+    sheet: {
+      comments: [],
+    },
     state: {
       inTrack: false,
       parsedCommand: 0,
@@ -279,6 +281,9 @@ function parseCommand(
       context.state.parsedCommand |= ParsedCommand.ISRC;
       return parseISRC(tokens, context);
     }
+    case "REM":
+      context.state.parsedCommand |= ParsedCommand.REM;
+      parseRem(tokens, context);
   }
 }
 
@@ -448,4 +453,16 @@ function parseISRC(
   }
 
   return { isrc };
+}
+
+function parseRem(tokens: TokenStream, context: Context): void {
+  const commentParts: string[] = [];
+  let token = tokens.next().value;
+  while (token.type === TokenType.Unquoted || token.type === TokenType.Quoted) {
+    commentParts.push(token.text);
+    token = tokens.next().value;
+  }
+
+  context.state.skipLineBreak = true;
+  context.sheet.comments.push(commentParts.join(" "));
 }

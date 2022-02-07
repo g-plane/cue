@@ -4,6 +4,7 @@ export interface CueSheeet {
   file?: File;
   flags?: Flags;
   isrc?: string;
+  comments: string[];
 }
 
 export interface File {
