@@ -16,6 +16,8 @@ export enum ErrorKind {
   TooManyFlags,
   InvalidIndexNumberRange,
   InvalidIndexTimeFormat,
+  InvalidISRCCommandLocation,
+  InvalidISRCFormat,
   UnknownFlag,
 }
 
@@ -57,5 +59,9 @@ export function translateErrorMessage(kind: ErrorKind): string {
       return "Index number range must be from 0 to 99.";
     case ErrorKind.InvalidIndexTimeFormat:
       return "Index time format must be 'mm:ss:ff'.";
+    case ErrorKind.InvalidISRCCommandLocation:
+      return "'ISRC' command must be specified after a 'TRACK' command, but before any 'INDEX' commands.";
+    case ErrorKind.InvalidISRCFormat:
+      return "Invalid ISRC format.";
   }
 }

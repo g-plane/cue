@@ -268,6 +268,17 @@ function parseCommand(
       context.state.parsedCommand |= ParsedCommand.FLAGS;
       return parseFlags(tokens, context);
     }
+    case "ISRC": {
+      const { parsedCommand } = context.state;
+      if (
+        !(parsedCommand & ParsedCommand.TRACK) ||
+        parsedCommand & ParsedCommand.INDEX
+      ) {
+        context.raise(ErrorKind.InvalidISRCCommandLocation, commandToken);
+      }
+      context.state.parsedCommand |= ParsedCommand.ISRC;
+      return parseISRC(tokens, context);
+    }
   }
 }
 
@@ -422,4 +433,19 @@ function parseIndex(tokens: TokenStream, context: Context): Index {
       Number.parseInt(matches[3]),
     ],
   };
+}
+
+const RE_ISRC = /^[a-z0-9]{5}\d{7}$/i;
+
+function parseISRC(
+  tokens: TokenStream,
+  context: Context,
+): Pick<CueSheeet, "isrc"> {
+  const token = expectToken(tokens, TokenType.Unquoted, context);
+  const isrc = token.text;
+  if (!RE_ISRC.test(isrc)) {
+    context.raise(ErrorKind.InvalidISRCFormat, token);
+  }
+
+  return { isrc };
 }
