@@ -190,12 +190,10 @@ export function parse(source: string, options: ParserOptions = {}) {
     raise,
   };
 
-  while (true) {
-    const next = tokens.next();
+  let next = tokens.next();
+  while (!next.done && next.value.type !== TokenType.EOF) {
     const token = next.value;
-    if (next.done || token.type === TokenType.EOF) {
-      break;
-    } else if (token.type === TokenType.Unquoted) {
+    if (token.type === TokenType.Unquoted) {
       context.state.commandToken = token;
       parseCommand(token, tokens, context);
 
@@ -224,6 +222,8 @@ export function parse(source: string, options: ParserOptions = {}) {
     } else {
       raise(ErrorKind.UnexpectedToken, token);
     }
+
+    next = tokens.next();
   }
 
   return { sheet: context.sheet, errors };
