@@ -1,6 +1,6 @@
 import { ErrorKind, translateErrorMessage } from "./errors.ts";
 import { FileType } from "./types.ts";
-import type { CueSheeet, Index, Track } from "./types.ts";
+import type { CueSheeet, Track } from "./types.ts";
 
 function stripBOM(text: string): string {
   if (text.charCodeAt(0) === 0xfeff) {
@@ -256,6 +256,9 @@ function parseCommand(
     case "FLAGS":
       parseFlags(tokens, context);
       break;
+    case "INDEX":
+      parseIndex(tokens, context);
+      break;
     case "ISRC":
       parseISRC(tokens, context);
       break;
@@ -430,7 +433,12 @@ function parseFlags(
 
 const RE_TIME = /^\d{2}:\d{2}:\d{2}$/;
 
-function parseIndex(tokens: TokenStream, context: Context): Index {
+function parseIndex(tokens: TokenStream, context: Context): void {
+  if (!context.state.currentTrack) {
+    context.raise(ErrorKind.CurrentTrackRequired, context.state.commandToken);
+    return;
+  }
+
   const indexNumberToken = expectToken(tokens, TokenType.Unquoted, context);
   const number = Number.parseInt(indexNumberToken.text);
   if (number < 0 || number > 99) {
@@ -441,12 +449,14 @@ function parseIndex(tokens: TokenStream, context: Context): Index {
   const matches = RE_TIME.exec(indexTimeToken.text);
   if (!matches) {
     context.raise(ErrorKind.InvalidTimeFormat, indexTimeToken);
-    return {
+    context.state.currentTrack.index = {
       number,
       startingTime: [0, 0, 0],
     };
+    return;
   }
-  return {
+
+  context.state.currentTrack.index = {
     number,
     startingTime: [
       Number.parseInt(matches[1]),
