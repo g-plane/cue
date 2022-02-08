@@ -25,7 +25,7 @@ type TokenQuoted = BaseToken & { type: TokenType.Quoted; text: string };
 
 type Token = TokenEOF | TokenLineBreak | TokenUnquoted | TokenQuoted;
 
-const RE_TOKENIZER = /"(.*?)"|(\S+?)(?:[^\S\n]+|(?=\n)|$)|\n|\s+/g;
+const RE_TOKENIZER = /(?:"(.*?)"|(\S+?))(?:[^\S\n]+|(?=\n)|$)|\n|\s+/g;
 
 type TokenStream = Generator<Token, Token>;
 
@@ -39,11 +39,11 @@ export function* tokenize(source: string): TokenStream {
       yield { pos: index, line, column, type: TokenType.LineBreak };
       line += 1;
       linePos = index;
-    } else if (matches[2] != null) {
-      const text = matches[2];
-      yield { pos: index, line, column, type: TokenType.Unquoted, text };
     } else if (matches[1] != null) {
       const text = matches[1];
+      yield { pos: index, line, column, type: TokenType.Quoted, text };
+    } else if (matches[2] != null) {
+      const text = matches[2];
       yield { pos: index, line, column, type: TokenType.Unquoted, text };
     }
   }
