@@ -15,9 +15,12 @@ export enum ErrorKind {
   NoFlags,
   TooManyFlags,
   InvalidIndexNumberRange,
-  InvalidIndexTimeFormat,
+  InvalidTimeFormat,
   InvalidISRCCommandLocation,
   InvalidISRCFormat,
+  CurrentTrackRequired,
+  InvalidPostGapCommandLocation,
+  DuplicatedPostGapCommand,
   UnknownFlag,
 }
 
@@ -57,11 +60,17 @@ export function translateErrorMessage(kind: ErrorKind): string {
       return "Unknown flag. Only 'DCP', '4CH', 'PRE' and 'SCMS' are allowed.";
     case ErrorKind.InvalidIndexNumberRange:
       return "Index number range must be from 0 to 99.";
-    case ErrorKind.InvalidIndexTimeFormat:
-      return "Index time format must be 'mm:ss:ff'.";
+    case ErrorKind.InvalidTimeFormat:
+      return "Time format must be 'mm:ss:ff'.";
     case ErrorKind.InvalidISRCCommandLocation:
       return "'ISRC' command must be specified after a 'TRACK' command, but before any 'INDEX' commands.";
     case ErrorKind.InvalidISRCFormat:
       return "Invalid ISRC format.";
+    case ErrorKind.CurrentTrackRequired:
+      return "This command must be under a specific track.";
+    case ErrorKind.InvalidPostGapCommandLocation:
+      return "'POSTGAP' command must appear after all 'INDEX' commands for the current track.";
+    case ErrorKind.DuplicatedPostGapCommand:
+      return "Only one 'POSTGAP' command is allowed per track.";
   }
 }

@@ -76,6 +76,7 @@ interface ParserState {
   currentTrack: Track | null;
   parsedCommand: number;
   skipLineBreak: boolean;
+  commandToken: Token;
 }
 
 interface Context {
@@ -184,6 +185,7 @@ export function parse(source: string, options: ParserOptions = {}) {
       currentTrack: null,
       parsedCommand: 0,
       skipLineBreak: false,
+      commandToken: null!,
     },
     raise,
   };
@@ -194,6 +196,7 @@ export function parse(source: string, options: ParserOptions = {}) {
     if (next.done || token.type === TokenType.EOF) {
       break;
     } else if (token.type === TokenType.Unquoted) {
+      context.state.commandToken = token;
       const command = parseCommand(token, tokens, context);
       Object.assign(context.sheet, command);
 
@@ -288,6 +291,9 @@ function parseCommand(
     case "REM":
       context.state.parsedCommand |= ParsedCommand.REM;
       parseRem(tokens, context);
+      break;
+    case "POSTGAP":
+      parsePostGap(tokens, context);
       break;
   }
 }
@@ -429,7 +435,7 @@ function parseIndex(tokens: TokenStream, context: Context): Index {
   const indexTimeToken = expectToken(tokens, TokenType.Unquoted, context);
   const matches = RE_TIME.exec(indexTimeToken.text);
   if (!matches) {
-    context.raise(ErrorKind.InvalidIndexTimeFormat, indexTimeToken);
+    context.raise(ErrorKind.InvalidTimeFormat, indexTimeToken);
     return {
       number,
       startingTime: [0, 0, 0],
@@ -484,4 +490,37 @@ function parseRem(tokens: TokenStream, context: Context): void {
 
   context.state.skipLineBreak = true;
   context.sheet.comments.push(commentParts.join(" "));
+}
+
+function parsePostGap(tokens: TokenStream, context: Context): void {
+  if (!context.state.currentTrack) {
+    context.raise(ErrorKind.CurrentTrackRequired, context.state.commandToken);
+    return;
+  }
+  if (!(context.state.parsedCommand & ParsedCommand.INDEX)) {
+    context.raise(
+      ErrorKind.InvalidPostGapCommandLocation,
+      context.state.commandToken,
+    );
+  }
+  if (context.state.parsedCommand & ParsedCommand.POSTGAP) {
+    context.raise(
+      ErrorKind.DuplicatedPostGapCommand,
+      context.state.commandToken,
+    );
+  }
+
+  const token = expectToken(tokens, TokenType.Unquoted, context);
+  const matches = RE_TIME.exec(token.text);
+  if (matches) {
+    context.state.currentTrack.postGap = [
+      Number.parseInt(matches[1]),
+      Number.parseInt(matches[2]),
+      Number.parseInt(matches[3]),
+    ];
+  } else {
+    context.raise(ErrorKind.InvalidTimeFormat, token);
+  }
+
+  context.state.parsedCommand |= ParsedCommand.POSTGAP;
 }
