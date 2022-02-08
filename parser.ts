@@ -487,18 +487,6 @@ function parsePerformer(tokens: TokenStream, context: Context): void {
   }
 }
 
-function parseRem(tokens: TokenStream, context: Context): void {
-  const commentParts: string[] = [];
-  let token = tokens.next().value;
-  while (token.type === TokenType.Unquoted || token.type === TokenType.Quoted) {
-    commentParts.push(token.text);
-    token = tokens.next().value;
-  }
-
-  context.state.skipLineBreak = true;
-  context.sheet.comments.push(commentParts.join(" "));
-}
-
 function parsePostGap(tokens: TokenStream, context: Context): void {
   if (!context.state.currentTrack) {
     context.raise(ErrorKind.CurrentTrackRequired, context.state.commandToken);
@@ -530,4 +518,16 @@ function parsePostGap(tokens: TokenStream, context: Context): void {
   }
 
   context.state.parsedCommand |= ParsedCommand.POSTGAP;
+}
+
+function parseRem(tokens: TokenStream, context: Context): void {
+  const commentParts: string[] = [];
+  let token = tokens.next().value;
+  while (token.type === TokenType.Unquoted || token.type === TokenType.Quoted) {
+    commentParts.push(token.text);
+    token = tokens.next().value;
+  }
+
+  context.state.skipLineBreak = true;
+  context.sheet.comments.push(commentParts.join(" "));
 }
