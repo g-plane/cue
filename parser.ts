@@ -1,6 +1,6 @@
 import { ErrorKind, translateErrorMessage } from "./errors.ts";
 import { FileType } from "./types.ts";
-import type { CueSheeet, Index } from "./types.ts";
+import type { CueSheeet, Index, Track } from "./types.ts";
 
 function stripBOM(text: string): string {
   if (text.charCodeAt(0) === 0xfeff) {
@@ -73,7 +73,7 @@ enum ParsedCommand {
 }
 
 interface ParserState {
-  inTrack: boolean;
+  currentTrack: Track | null;
   parsedCommand: number;
   skipLineBreak: boolean;
 }
@@ -181,7 +181,7 @@ export function parse(source: string, options: ParserOptions = {}) {
       comments: [],
     },
     state: {
-      inTrack: false,
+      currentTrack: null,
       parsedCommand: 0,
       skipLineBreak: false,
     },
@@ -281,9 +281,14 @@ function parseCommand(
       context.state.parsedCommand |= ParsedCommand.ISRC;
       return parseISRC(tokens, context);
     }
+    case "PERFORMER":
+      context.state.parsedCommand |= ParsedCommand.PERFORMER;
+      parsePerformer(tokens, context);
+      break;
     case "REM":
       context.state.parsedCommand |= ParsedCommand.REM;
       parseRem(tokens, context);
+      break;
   }
 }
 
@@ -453,6 +458,20 @@ function parseISRC(
   }
 
   return { isrc };
+}
+
+function parsePerformer(tokens: TokenStream, context: Context): void {
+  const token = tokens.next().value;
+  if (token.type !== TokenType.Unquoted && token.type !== TokenType.Quoted) {
+    context.raise(ErrorKind.MissingArguments, token);
+    return;
+  }
+
+  if (context.state.currentTrack) {
+    context.state.currentTrack.performer = token.text;
+  } else {
+    context.sheet.performer = token.text;
+  }
 }
 
 function parseRem(tokens: TokenStream, context: Context): void {

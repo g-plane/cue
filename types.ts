@@ -4,6 +4,7 @@ export interface CueSheeet {
   file?: File;
   flags?: Flags;
   isrc?: string;
+  performer?: string;
   comments: string[];
 }
 
@@ -33,4 +34,8 @@ export interface Flags {
 export interface Index {
   number: number;
   startingTime: [number, number, number];
+}
+
+export interface Track {
+  performer?: string;
 }
