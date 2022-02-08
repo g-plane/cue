@@ -7,6 +7,7 @@ export interface CueSheeet {
   title?: string;
   performer?: string;
   songWriter?: string;
+  tracks: Track[];
   comments: string[];
 }
 
@@ -39,10 +40,24 @@ export interface Index {
 }
 
 export interface Track {
+  trackNumber: number;
+  dataType: TrackDataType;
   title?: string;
   performer?: string;
   songWriter?: string;
   index?: Index;
   preGap?: [number, number, number];
   postGap?: [number, number, number];
+}
+
+export enum TrackDataType {
+  Unknown,
+  "AUDIO",
+  "CDG",
+  "MODE1/2048",
+  "MODE1/2352",
+  "MODE2/2336",
+  "MODE2/2352",
+  "CDI/2336",
+  "CDI/2352",
 }

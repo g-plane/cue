@@ -1,5 +1,5 @@
 import { ErrorKind, translateErrorMessage } from "./errors.ts";
-import { FileType } from "./types.ts";
+import { FileType, TrackDataType } from "./types.ts";
 import type { CueSheeet, Track } from "./types.ts";
 
 function stripBOM(text: string): string {
@@ -179,6 +179,7 @@ export function parse(source: string, options: ParserOptions = {}) {
 
   const context: Context = {
     sheet: {
+      tracks: [],
       comments: [],
     },
     state: {
@@ -224,6 +225,10 @@ export function parse(source: string, options: ParserOptions = {}) {
     }
 
     next = tokens.next();
+  }
+
+  if (context.state.currentTrack) {
+    context.sheet.tracks.push(context.state.currentTrack);
   }
 
   return { sheet: context.sheet, errors };
@@ -279,6 +284,9 @@ function parseCommand(
       break;
     case "TITLE":
       parseTitle(tokens, context);
+      break;
+    case "TRACK":
+      parseTrack(tokens, context);
       break;
   }
 }
@@ -606,4 +614,54 @@ function parseTitle(tokens: TokenStream, context: Context): void {
   } else {
     context.sheet.title = token.text;
   }
+}
+
+function parseTrack(tokens: TokenStream, context: Context): void {
+  const { state } = context;
+  state.parsedCommand &= ~ParsedCommand.TITLE;
+  state.parsedCommand &= ~ParsedCommand.PERFORMER;
+  state.parsedCommand &= ~ParsedCommand.SONGWRITER;
+  state.parsedCommand &= ~ParsedCommand.INDEX;
+  state.parsedCommand &= ~ParsedCommand.PREGAP;
+  state.parsedCommand &= ~ParsedCommand.POSTGAP;
+  state.parsedCommand &= ~ParsedCommand.ISRC;
+
+  if (context.state.currentTrack) {
+    context.sheet.tracks.push(context.state.currentTrack);
+  }
+
+  const trackNumberToken = expectToken(tokens, TokenType.Unquoted, context);
+  const trackNumber = Number.parseInt(trackNumberToken.text);
+  if (trackNumber < 1 || trackNumber > 99) {
+    context.raise(ErrorKind.InvalidTrackNumberRange, trackNumberToken);
+  }
+
+  const dataTypeToken = expectToken(tokens, TokenType.Unquoted, context);
+  const dataType = (() => {
+    switch (dataTypeToken.text.toUpperCase()) {
+      case "AUDIO":
+        return TrackDataType["AUDIO"];
+      case "CDG":
+        return TrackDataType["CDG"];
+      case "MODE1/2048":
+        return TrackDataType["MODE1/2048"];
+      case "MODE1/2352":
+        return TrackDataType["MODE1/2352"];
+      case "MODE2/2336":
+        return TrackDataType["MODE2/2336"];
+      case "MODE2/2352":
+        return TrackDataType["MODE2/2352"];
+      case "CDI/2336":
+        return TrackDataType["CDI/2336"];
+      case "CDI/2352":
+        return TrackDataType["CDI/2352"];
+      default:
+        return TrackDataType.Unknown;
+    }
+  })();
+  if (dataType === TrackDataType.Unknown) {
+    context.raise(ErrorKind.UnknownTrackDataType, dataTypeToken);
+  }
+
+  context.state.currentTrack = { trackNumber, dataType };
 }
