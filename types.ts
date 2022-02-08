@@ -46,6 +46,7 @@ export interface Track {
   performer?: string;
   songWriter?: string;
   index?: Index;
+  isrc?: string;
   preGap?: [number, number, number];
   postGap?: [number, number, number];
 }

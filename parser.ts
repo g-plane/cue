@@ -497,7 +497,11 @@ function parseISRC(
     context.raise(ErrorKind.InvalidISRCFormat, token);
   }
 
-  context.sheet.isrc = isrc;
+  if (context.state.currentTrack) {
+    context.state.currentTrack.isrc = isrc;
+  } else {
+    context.sheet.isrc = isrc;
+  }
 }
 
 function parsePerformer(tokens: TokenStream, context: Context): void {
