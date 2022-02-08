@@ -271,6 +271,9 @@ function parseCommand(
     case "PREGAP":
       parsePreGap(tokens, context);
       break;
+    case "SONGWRITER":
+      parseSongWriter(tokens, context);
+      break;
   }
 }
 
@@ -562,4 +565,18 @@ function parseRem(tokens: TokenStream, context: Context): void {
 
   context.state.skipLineBreak = true;
   context.sheet.comments.push(commentParts.join(" "));
+}
+
+function parseSongWriter(tokens: TokenStream, context: Context): void {
+  const token = tokens.next().value;
+  if (token.type !== TokenType.Unquoted && token.type !== TokenType.Quoted) {
+    context.raise(ErrorKind.MissingArguments, token);
+    return;
+  }
+
+  if (context.state.currentTrack) {
+    context.state.currentTrack.songWriter = token.text;
+  } else {
+    context.sheet.songWriter = token.text;
+  }
 }
