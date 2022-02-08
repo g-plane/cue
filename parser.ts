@@ -197,8 +197,7 @@ export function parse(source: string, options: ParserOptions = {}) {
       break;
     } else if (token.type === TokenType.Unquoted) {
       context.state.commandToken = token;
-      const command = parseCommand(token, tokens, context);
-      Object.assign(context.sheet, command);
+      parseCommand(token, tokens, context);
 
       if (context.state.skipLineBreak) {
         context.state.skipLineBreak = false;
@@ -234,62 +233,36 @@ function parseCommand(
   commandToken: TokenUnquoted,
   tokens: TokenStream,
   context: Context,
-) {
+): void {
   const command = commandToken.text.toUpperCase();
+  const commandEnumValue: number | undefined = Reflect.get(
+    ParsedCommand,
+    command,
+  );
+  if (commandEnumValue) {
+    context.state.parsedCommand |= commandEnumValue;
+  }
 
   switch (command) {
     case "CATALOG":
-      if (context.state.parsedCommand & ParsedCommand.CATALOG) {
-        context.raise(ErrorKind.DuplicatedCatalog, commandToken);
-      }
-      context.state.parsedCommand |= ParsedCommand.CATALOG;
-      return parseCatalog(tokens, context);
+      parseCatalog(tokens, context);
+      break;
     case "CDTEXTFILE":
-      context.state.parsedCommand |= ParsedCommand.CDTEXTFILE;
-      return parseCDTextFile(tokens, context);
-    case "FILE": {
-      const { parsedCommand } = context.state;
-      if (
-        parsedCommand &&
-        !(parsedCommand & ParsedCommand.CATALOG) &&
-        !(parsedCommand & ParsedCommand.CDTEXTFILE)
-      ) {
-        context.raise(ErrorKind.InvalidFileCommandLocation, commandToken);
-      }
-      context.state.parsedCommand |= ParsedCommand.FILE;
-      return parseFile(tokens, context);
-    }
-    case "FLAGS": {
-      const { parsedCommand } = context.state;
-      if (
-        !(parsedCommand & ParsedCommand.TRACK) ||
-        parsedCommand & ParsedCommand.INDEX
-      ) {
-        context.raise(ErrorKind.InvalidFlagsCommandLocation, commandToken);
-      }
-      if (parsedCommand & ParsedCommand.FLAGS) {
-        context.raise(ErrorKind.DuplicatedFlagsCommand, commandToken);
-      }
-      context.state.parsedCommand |= ParsedCommand.FLAGS;
-      return parseFlags(tokens, context);
-    }
-    case "ISRC": {
-      const { parsedCommand } = context.state;
-      if (
-        !(parsedCommand & ParsedCommand.TRACK) ||
-        parsedCommand & ParsedCommand.INDEX
-      ) {
-        context.raise(ErrorKind.InvalidISRCCommandLocation, commandToken);
-      }
-      context.state.parsedCommand |= ParsedCommand.ISRC;
-      return parseISRC(tokens, context);
-    }
+      parseCDTextFile(tokens, context);
+      break;
+    case "FILE":
+      parseFile(tokens, context);
+      break;
+    case "FLAGS":
+      parseFlags(tokens, context);
+      break;
+    case "ISRC":
+      parseISRC(tokens, context);
+      break;
     case "PERFORMER":
-      context.state.parsedCommand |= ParsedCommand.PERFORMER;
       parsePerformer(tokens, context);
       break;
     case "REM":
-      context.state.parsedCommand |= ParsedCommand.REM;
       parseRem(tokens, context);
       break;
     case "POSTGAP":
@@ -303,73 +276,98 @@ const RE_CATALOG = /^\d{13}$/;
 function parseCatalog(
   tokens: TokenStream,
   context: Context,
-): Pick<CueSheeet, "catalog"> {
-  const tokenCatalog = expectToken(tokens, TokenType.Unquoted, context);
-
-  // An unquoted token or a quoted token won't be empty.
-  // It's for tolerant parsing that checking if it's an empty string.
-  if (tokenCatalog.text === "") {
-    return {};
+): void {
+  if (context.state.parsedCommand & ParsedCommand.CATALOG) {
+    context.raise(ErrorKind.DuplicatedCatalog, context.state.commandToken);
   }
 
+  const tokenCatalog = expectToken(tokens, TokenType.Unquoted, context);
   if (!RE_CATALOG.test(tokenCatalog.text)) {
     context.raise(ErrorKind.InvalidCatalogFormat, tokenCatalog);
   }
 
-  return { catalog: tokenCatalog.text };
+  context.sheet.catalog = tokenCatalog.text;
 }
 
 function parseCDTextFile(
   tokens: TokenStream,
   context: Context,
-): Pick<CueSheeet, "CDTextFile"> {
+): void {
   const token = tokens.next().value;
-  if (token.type !== TokenType.Unquoted && token.type !== TokenType.Quoted) {
+  if (token.type === TokenType.Unquoted || token.type === TokenType.Quoted) {
+    context.sheet.CDTextFile = token.text;
+  } else {
     context.raise(ErrorKind.MissingArguments, token);
-    return {};
   }
-
-  return { CDTextFile: token.text };
 }
 
 function parseFile(
   tokens: TokenStream,
   context: Context,
-): Pick<CueSheeet, "file"> {
+): void {
+  const { parsedCommand } = context.state;
+  if (
+    parsedCommand &&
+    !(parsedCommand & ParsedCommand.CATALOG) &&
+    !(parsedCommand & ParsedCommand.CDTEXTFILE)
+  ) {
+    context.raise(
+      ErrorKind.InvalidFileCommandLocation,
+      context.state.commandToken,
+    );
+  }
+
   const fileNameToken = tokens.next().value;
   if (
     fileNameToken.type !== TokenType.Unquoted &&
     fileNameToken.type !== TokenType.Quoted
   ) {
     context.raise(ErrorKind.MissingArguments, fileNameToken);
-    return {};
+    return;
   }
 
   const fileTypeToken = expectToken(tokens, TokenType.Unquoted, context);
-  let fileType: FileType;
-  const typeText = fileTypeToken.text.toUpperCase();
-  if (typeText === "BINARY") {
-    fileType = FileType.Binary;
-  } else if (typeText === "MOTOROLA") {
-    fileType = FileType.Motorola;
-  } else if (typeText === "AIFF") {
-    fileType = FileType.Aiff;
-  } else if (typeText === "WAVE") {
-    fileType = FileType.Wave;
-  } else if (typeText === "MP3") {
-    fileType = FileType.Mp3;
-  } else {
+  const fileType = (() => {
+    switch (fileTypeToken.text.toUpperCase()) {
+      case "BINARY":
+        return FileType.Binary;
+      case "MOTOROLA":
+        return FileType.Motorola;
+      case "AIFF":
+        return FileType.Aiff;
+      case "WAVE":
+        return FileType.Wave;
+      case "MP3":
+        return FileType.Mp3;
+      default:
+        return FileType.Unknown;
+    }
+  })();
+  if (fileType === FileType.Unknown) {
     context.raise(ErrorKind.UnknownFileType, fileTypeToken);
-    return { file: { name: fileNameToken.text, type: FileType.Unknown } };
   }
 
-  return { file: { name: fileNameToken.text, type: fileType } };
+  context.sheet.file = { name: fileNameToken.text, type: fileType };
 }
 
 function parseFlags(
   tokens: TokenStream,
   context: Context,
-): Pick<CueSheeet, "flags"> {
+): void {
+  const { parsedCommand } = context.state;
+  if (
+    !(parsedCommand & ParsedCommand.TRACK) ||
+    parsedCommand & ParsedCommand.INDEX
+  ) {
+    context.raise(
+      ErrorKind.InvalidFlagsCommandLocation,
+      context.state.commandToken,
+    );
+  }
+  if (parsedCommand & ParsedCommand.FLAGS) {
+    context.raise(ErrorKind.DuplicatedFlagsCommand, context.state.commandToken);
+  }
+
   let digitalCopyPermitted = false;
   let fourChannelAudio = false;
   let preEmphasisEnabled = false;
@@ -409,13 +407,11 @@ function parseFlags(
 
       context.state.skipLineBreak = true;
 
-      return {
-        flags: {
-          digitalCopyPermitted,
-          fourChannelAudio,
-          preEmphasisEnabled,
-          scms,
-        },
+      context.sheet.flags = {
+        digitalCopyPermitted,
+        fourChannelAudio,
+        preEmphasisEnabled,
+        scms,
       };
     } else {
       context.raise(ErrorKind.UnexpectedToken, token);
@@ -456,14 +452,25 @@ const RE_ISRC = /^[a-z0-9]{5}\d{7}$/i;
 function parseISRC(
   tokens: TokenStream,
   context: Context,
-): Pick<CueSheeet, "isrc"> {
+): void {
+  const { parsedCommand } = context.state;
+  if (
+    !(parsedCommand & ParsedCommand.TRACK) ||
+    parsedCommand & ParsedCommand.INDEX
+  ) {
+    context.raise(
+      ErrorKind.InvalidISRCCommandLocation,
+      context.state.commandToken,
+    );
+  }
+
   const token = expectToken(tokens, TokenType.Unquoted, context);
   const isrc = token.text;
   if (!RE_ISRC.test(isrc)) {
     context.raise(ErrorKind.InvalidISRCFormat, token);
   }
 
-  return { isrc };
+  context.sheet.isrc = isrc;
 }
 
 function parsePerformer(tokens: TokenStream, context: Context): void {
