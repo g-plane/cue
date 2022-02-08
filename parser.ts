@@ -457,21 +457,21 @@ function parseIndex(tokens: TokenStream, context: Context): void {
   const matches = RE_TIME.exec(indexTimeToken.text);
   if (!matches) {
     context.raise(ErrorKind.InvalidTimeFormat, indexTimeToken);
-    context.state.currentTrack.index = {
+    context.state.currentTrack.indexes.push({
       number,
       startingTime: [0, 0, 0],
-    };
+    });
     return;
   }
 
-  context.state.currentTrack.index = {
+  context.state.currentTrack.indexes.push({
     number,
     startingTime: [
       Number.parseInt(matches[1]),
       Number.parseInt(matches[2]),
       Number.parseInt(matches[3]),
     ],
-  };
+  });
 }
 
 const RE_ISRC = /^[a-z0-9]{5}\d{7}$/i;
@@ -667,5 +667,5 @@ function parseTrack(tokens: TokenStream, context: Context): void {
     context.raise(ErrorKind.UnknownTrackDataType, dataTypeToken);
   }
 
-  context.state.currentTrack = { trackNumber, dataType };
+  context.state.currentTrack = { trackNumber, dataType, indexes: [] };
 }
