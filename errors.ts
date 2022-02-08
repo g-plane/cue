@@ -21,6 +21,8 @@ export enum ErrorKind {
   CurrentTrackRequired,
   InvalidPostGapCommandLocation,
   DuplicatedPostGapCommand,
+  InvalidPreGapCommandLocation,
+  DuplicatedPreGapCommand,
   UnknownFlag,
 }
 
@@ -72,5 +74,9 @@ export function translateErrorMessage(kind: ErrorKind): string {
       return "'POSTGAP' command must appear after all 'INDEX' commands for the current track.";
     case ErrorKind.DuplicatedPostGapCommand:
       return "Only one 'POSTGAP' command is allowed per track.";
+    case ErrorKind.InvalidPreGapCommandLocation:
+      return "'PREGAP' command must appear before any 'INDEX' commands.";
+    case ErrorKind.DuplicatedPreGapCommand:
+      return "Only one 'PREGAP' command is allowed per track.";
   }
 }

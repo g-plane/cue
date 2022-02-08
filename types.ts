@@ -38,5 +38,6 @@ export interface Index {
 
 export interface Track {
   performer?: string;
+  preGap?: [number, number, number];
   postGap?: [number, number, number];
 }

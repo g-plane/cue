@@ -268,6 +268,9 @@ function parseCommand(
     case "POSTGAP":
       parsePostGap(tokens, context);
       break;
+    case "PREGAP":
+      parsePreGap(tokens, context);
+      break;
   }
 }
 
@@ -516,8 +519,37 @@ function parsePostGap(tokens: TokenStream, context: Context): void {
   } else {
     context.raise(ErrorKind.InvalidTimeFormat, token);
   }
+}
 
-  context.state.parsedCommand |= ParsedCommand.POSTGAP;
+function parsePreGap(tokens: TokenStream, context: Context): void {
+  if (!context.state.currentTrack) {
+    context.raise(ErrorKind.CurrentTrackRequired, context.state.commandToken);
+    return;
+  }
+  if (context.state.parsedCommand & ParsedCommand.INDEX) {
+    context.raise(
+      ErrorKind.InvalidPreGapCommandLocation,
+      context.state.commandToken,
+    );
+  }
+  if (context.state.parsedCommand & ParsedCommand.PREGAP) {
+    context.raise(
+      ErrorKind.DuplicatedPreGapCommand,
+      context.state.commandToken,
+    );
+  }
+
+  const token = expectToken(tokens, TokenType.Unquoted, context);
+  const matches = RE_TIME.exec(token.text);
+  if (matches) {
+    context.state.currentTrack.preGap = [
+      Number.parseInt(matches[1]),
+      Number.parseInt(matches[2]),
+      Number.parseInt(matches[3]),
+    ];
+  } else {
+    context.raise(ErrorKind.InvalidTimeFormat, token);
+  }
 }
 
 function parseRem(tokens: TokenStream, context: Context): void {
