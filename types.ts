@@ -4,6 +4,7 @@ export interface CueSheeet {
   file?: File;
   flags?: Flags;
   isrc?: string;
+  title?: string;
   performer?: string;
   songWriter?: string;
   comments: string[];
@@ -38,6 +39,7 @@ export interface Index {
 }
 
 export interface Track {
+  title?: string;
   performer?: string;
   songWriter?: string;
   preGap?: [number, number, number];
