@@ -240,13 +240,6 @@ function parseCommand(
   context: Context,
 ): void {
   const command = commandToken.text.toUpperCase();
-  const commandEnumValue: number | undefined = Reflect.get(
-    ParsedCommand,
-    command,
-  );
-  if (commandEnumValue) {
-    context.state.parsedCommand |= commandEnumValue;
-  }
 
   switch (command) {
     case "CATALOG":
@@ -288,6 +281,14 @@ function parseCommand(
     case "TRACK":
       parseTrack(tokens, context);
       break;
+  }
+
+  const commandEnumValue: number | undefined = Reflect.get(
+    ParsedCommand,
+    command,
+  );
+  if (commandEnumValue) {
+    context.state.parsedCommand |= commandEnumValue;
   }
 }
 
