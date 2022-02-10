@@ -218,9 +218,7 @@ export function parse(source: string, options: ParserOptions = {}) {
           next = tokens.next();
         }
       }
-    } else if (token.type === TokenType.LineBreak) {
-      continue;
-    } else {
+    } else if (token.type !== TokenType.LineBreak) {
       raise(ErrorKind.UnexpectedToken, token);
     }
 
