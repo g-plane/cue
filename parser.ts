@@ -301,6 +301,11 @@ function parseCatalog(
   }
 
   const tokenCatalog = expectToken(tokens, TokenType.Unquoted, context);
+  // unquoted text won't be empty
+  // but tolerant parser will return an empty string if parsing failed
+  if (tokenCatalog.text === "") {
+    return;
+  }
   if (!RE_CATALOG.test(tokenCatalog.text)) {
     context.raise(ErrorKind.InvalidCatalogFormat, tokenCatalog);
   }
