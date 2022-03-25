@@ -1,4 +1,4 @@
-import { ErrorKind, translateErrorMessage } from "./errors.ts";
+import { ErrorKind, ParsingError } from "./errors.ts";
 import { FileType, TrackDataType } from "./types.ts";
 import type { CueSheeet, Track } from "./types.ts";
 
@@ -156,8 +156,6 @@ function expectToken(
   return token;
 }
 
-type ParsingError = { kind: ErrorKind; line: number; column: number };
-
 interface ParserOptions {
   fatal?: boolean;
 }
@@ -166,16 +164,14 @@ export function parse(source: string, options: ParserOptions = {}) {
   const tokens = tokenize(stripBOM(source));
 
   const errors: ParsingError[] = [];
-  const raise: Context["raise"] = options.fatal
-    ? ((kind, errorAt) => {
-      throw new SyntaxError(
-        `${translateErrorMessage(kind)} (${errorAt.line}:${errorAt.column})`,
-        { cause: { kind, errorAt } },
-      );
-    })
-    : ((kind, errorAt) => {
-      errors.push({ kind, line: errorAt.line, column: errorAt.column });
-    });
+  const raise: Context["raise"] = (kind, errorAt) => {
+    const error = new ParsingError(kind, errorAt);
+    if (options.fatal) {
+      throw error;
+    } else {
+      errors.push(error);
+    }
+  };
 
   const context: Context = {
     sheet: {

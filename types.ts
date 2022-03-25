@@ -1,3 +1,9 @@
+export interface Location {
+  pos: number;
+  line: number;
+  column: number;
+}
+
 export interface CueSheeet {
   catalog?: string;
   CDTextFile?: string;

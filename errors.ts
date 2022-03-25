@@ -1,3 +1,5 @@
+import type { Location } from "./types.ts";
+
 export enum ErrorKind {
   Reserved,
   ExpectTokenEOF,
@@ -84,5 +86,11 @@ export function translateErrorMessage(kind: ErrorKind): string {
       return "Track number range must be from 1 to 99.";
     case ErrorKind.UnknownTrackDataType:
       return "Unknown track data type.";
+  }
+}
+
+export class ParsingError extends Error {
+  constructor(public kind: ErrorKind, public errorAt: Location) {
+    super(`${translateErrorMessage(kind)} (${errorAt.line}:${errorAt.column})`);
   }
 }
