@@ -1,4 +1,4 @@
-export interface Location {
+export interface Position {
   pos: number;
   line: number;
   column: number;

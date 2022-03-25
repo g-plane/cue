@@ -1,4 +1,4 @@
-import type { Location } from "./types.ts";
+import type { Position } from "./types.ts";
 
 export enum ErrorKind {
   Reserved,
@@ -93,7 +93,9 @@ export function translateErrorMessage(kind: ErrorKind): string {
 }
 
 export class ParsingError extends Error {
-  constructor(public kind: ErrorKind, public errorAt: Location) {
-    super(`${translateErrorMessage(kind)} (${errorAt.line}:${errorAt.column})`);
+  constructor(public kind: ErrorKind, public position: Position) {
+    super(
+      `${translateErrorMessage(kind)} (${position.line}:${position.column})`,
+    );
   }
 }
