@@ -21,32 +21,36 @@ Deno.test("parse valid catalog", () => {
 });
 
 Deno.test("invalid catalog format", () => {
-  assertEquals(parse(`CATALOG abcdefghijklm`), {
-    sheet: { catalog: "abcdefghijklm", tracks: [], comments: [] },
-    errors: [{ kind: ErrorKind.InvalidCatalogFormat, line: 1, column: 9 }],
-  });
+  const { sheet: sheet1, errors: [error1] } = parse(`CATALOG abcdefghijklm`);
+  assertEquals(sheet1, { catalog: "abcdefghijklm", tracks: [], comments: [] });
+  assertEquals(error1.kind, ErrorKind.InvalidCatalogFormat);
+  assertEquals(error1.errorAt.line, 1);
+  assertEquals(error1.errorAt.column, 9);
 
-  assertEquals(parse(`CATALOG 1234`), {
-    sheet: { catalog: "1234", tracks: [], comments: [] },
-    errors: [{ kind: ErrorKind.InvalidCatalogFormat, line: 1, column: 9 }],
-  });
+  const { sheet: sheet2, errors: [error2] } = parse(`CATALOG 1234`);
+  assertEquals(sheet2, { catalog: "1234", tracks: [], comments: [] });
+  assertEquals(error2.kind, ErrorKind.InvalidCatalogFormat);
+  assertEquals(error2.errorAt.line, 1);
+  assertEquals(error2.errorAt.column, 9);
 });
 
 Deno.test("duplicated catalog", () => {
   const source = `CATALOG 1234567890123
 CATALOG 0987654321098`;
 
-  assertEquals(parse(source), {
-    sheet: { catalog: "0987654321098", tracks: [], comments: [] },
-    errors: [{ kind: ErrorKind.DuplicatedCatalog, line: 2, column: 1 }],
-  });
+  const { sheet, errors: [error] } = parse(source);
+  assertEquals(sheet, { catalog: "0987654321098", tracks: [], comments: [] });
+  assertEquals(error.kind, ErrorKind.DuplicatedCatalog);
+  assertEquals(error.errorAt.line, 2);
+  assertEquals(error.errorAt.column, 1);
 });
 
 Deno.test("missing catalog argument", () => {
-  assertEquals(parse(`CATALOG`), {
-    sheet: { tracks: [], comments: [] },
-    errors: [{ kind: ErrorKind.ExpectTokenUnquoted, line: 1, column: 8 }],
-  });
+  const { sheet, errors: [error] } = parse(`CATALOG`);
+  assertEquals(sheet, { tracks: [], comments: [] });
+  assertEquals(error.kind, ErrorKind.ExpectTokenUnquoted);
+  assertEquals(error.errorAt.line, 1);
+  assertEquals(error.errorAt.column, 8);
 });
 
 Deno.test("parse valid CD Text File", () => {
@@ -74,10 +78,11 @@ Deno.test("parse valid CD Text File", () => {
 });
 
 Deno.test("missing CD Text File argument", () => {
-  assertEquals(parse(`CDTEXTFILE `), {
-    sheet: { tracks: [], comments: [] },
-    errors: [{ kind: ErrorKind.MissingArguments, line: 1, column: 12 }],
-  });
+  const { sheet, errors: [error] } = parse(`CDTEXTFILE `);
+  assertEquals(sheet, { tracks: [], comments: [] });
+  assertEquals(error.kind, ErrorKind.MissingArguments);
+  assertEquals(error.errorAt.line, 1);
+  assertEquals(error.errorAt.column, 12);
 });
 
 Deno.test("parse valid FILE command", () => {
@@ -146,44 +151,46 @@ Deno.test("parse valid FILE command", () => {
 });
 
 Deno.test("missing FILE command file name argument", () => {
-  assertEquals(parse(`FILE `), {
-    sheet: { tracks: [], comments: [] },
-    errors: [{ kind: ErrorKind.MissingArguments, line: 1, column: 6 }],
-  });
+  const { sheet, errors: [error] } = parse(`FILE `);
+  assertEquals(sheet, { tracks: [], comments: [] });
+  assertEquals(error.kind, ErrorKind.MissingArguments);
+  assertEquals(error.errorAt.line, 1);
+  assertEquals(error.errorAt.column, 6);
 });
 
 Deno.test("missing FILE command file type argument", () => {
-  assertEquals(parse(`FILE audio.wav`), {
-    sheet: {
-      file: { name: "audio.wav", type: FileType.Unknown },
-      tracks: [],
-      comments: [],
-    },
-    errors: [
-      { kind: ErrorKind.ExpectTokenUnquoted, line: 1, column: 15 },
-      {
-        kind: ErrorKind.UnknownFileType,
-        line: 1,
-        column: 15,
-      },
-    ],
+  const { sheet, errors } = parse(`FILE audio.wav`);
+  assertEquals(sheet, {
+    file: { name: "audio.wav", type: FileType.Unknown },
+    tracks: [],
+    comments: [],
   });
+  assertEquals(errors[0].kind, ErrorKind.ExpectTokenUnquoted);
+  assertEquals(errors[0].errorAt.line, 1);
+  assertEquals(errors[0].errorAt.column, 15);
+  assertEquals(errors[1].kind, ErrorKind.UnknownFileType);
+  assertEquals(errors[1].errorAt.line, 1);
+  assertEquals(errors[1].errorAt.column, 15);
 });
 
 Deno.test("invalid FILE command file type argument", () => {
-  assertEquals(parse(`FILE audio.wav WAV`), {
-    sheet: {
-      file: { name: "audio.wav", type: FileType.Unknown },
-      tracks: [],
-      comments: [],
-    },
-    errors: [{ kind: ErrorKind.UnknownFileType, line: 1, column: 16 }],
+  const { sheet, errors: [error] } = parse(`FILE audio.wav WAV`);
+  assertEquals(sheet, {
+    file: { name: "audio.wav", type: FileType.Unknown },
+    tracks: [],
+    comments: [],
   });
+  assertEquals(error.kind, ErrorKind.UnknownFileType);
+  assertEquals(error.errorAt.line, 1);
+  assertEquals(error.errorAt.column, 16);
 });
 
 Deno.test("disallow multiple commands on the same line", () => {
-  assertEquals(parse(`CDTEXTFILE cdt.cdt FILE audio.wav WAV`), {
-    sheet: { CDTextFile: "cdt.cdt", tracks: [], comments: [] },
-    errors: [{ kind: ErrorKind.UnexpectedToken, line: 1, column: 20 }],
-  });
+  const { sheet, errors: [error] } = parse(
+    `CDTEXTFILE cdt.cdt FILE audio.wav WAV`,
+  );
+  assertEquals(sheet, { CDTextFile: "cdt.cdt", tracks: [], comments: [] });
+  assertEquals(error.kind, ErrorKind.UnexpectedToken);
+  assertEquals(error.errorAt.line, 1);
+  assertEquals(error.errorAt.column, 20);
 });
