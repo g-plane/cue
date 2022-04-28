@@ -1,4 +1,6 @@
 import { ErrorKind, ParsingError } from "./errors.ts";
+import { tokenize, TokenKind } from "./tokenizer.ts";
+import type { TokenStream, TokenUnquoted } from "./tokenizer.ts";
 import { FileType, TrackDataType } from "./types.ts";
 import type { CueSheeet, Track } from "./types.ts";
 
@@ -8,52 +10,6 @@ function stripBOM(text: string): string {
   }
 
   return text;
-}
-
-enum TokenType {
-  EOF,
-  LineBreak,
-  Unquoted,
-  Quoted,
-}
-
-type BaseToken = { pos: number; line: number; column: number };
-type TokenEOF = BaseToken & { type: TokenType.EOF };
-type TokenLineBreak = BaseToken & { type: TokenType.LineBreak };
-type TokenUnquoted = BaseToken & { type: TokenType.Unquoted; text: string };
-type TokenQuoted = BaseToken & { type: TokenType.Quoted; text: string };
-
-type Token = TokenEOF | TokenLineBreak | TokenUnquoted | TokenQuoted;
-
-const RE_TOKENIZER = /(?:"(.*?)"|(\S+?))(?:[^\S\n]+|(?=\n)|$)|\n|\s+/g;
-
-type TokenStream = Generator<Token, Token>;
-
-export function* tokenize(source: string): TokenStream {
-  let line = 1, linePos = -1;
-  for (const matches of source.matchAll(RE_TOKENIZER)) {
-    const index = matches.index!;
-    const column = index - linePos;
-
-    if (matches[0].charCodeAt(0) === 10) {
-      yield { pos: index, line, column, type: TokenType.LineBreak };
-      line += 1;
-      linePos = index;
-    } else if (matches[1] != null) {
-      const text = matches[1];
-      yield { pos: index, line, column, type: TokenType.Quoted, text };
-    } else if (matches[2] != null) {
-      const text = matches[2];
-      yield { pos: index, line, column, type: TokenType.Unquoted, text };
-    }
-  }
-
-  return {
-    pos: source.length,
-    line,
-    column: source.length - linePos,
-    type: TokenType.EOF,
-  };
 }
 
 enum ParsedCommand {
@@ -75,8 +31,7 @@ enum ParsedCommand {
 interface ParserState {
   currentTrack: Track | null;
   parsedCommand: number;
-  skipLineBreak: boolean;
-  commandToken: Token;
+  commandToken: TokenUnquoted;
 }
 
 interface Context {
@@ -93,76 +48,11 @@ interface Context {
   ): void;
 }
 
-function expectToken(
-  tokens: TokenStream,
-  type: TokenType.EOF,
-  context: Context,
-): TokenEOF;
-function expectToken(
-  tokens: TokenStream,
-  type: TokenType.LineBreak,
-  context: Context,
-): TokenLineBreak;
-function expectToken(
-  tokens: TokenStream,
-  type: TokenType.Unquoted,
-  context: Context,
-): TokenUnquoted;
-function expectToken(
-  tokens: TokenStream,
-  type: TokenType.Quoted,
-  context: Context,
-): TokenQuoted;
-function expectToken(
-  tokens: TokenStream,
-  type: TokenType,
-  context: Context,
-): Token {
-  const token = tokens.next().value;
-  if (token.type !== type) {
-    switch (type) {
-      case TokenType.EOF:
-        context.raise(ErrorKind.ExpectTokenEOF, token);
-        break;
-      case TokenType.LineBreak:
-        context.raise(ErrorKind.ExpectTokenLineBreak, token);
-        return {
-          pos: token.pos,
-          line: token.line,
-          column: token.column,
-          type: TokenType.LineBreak,
-        };
-      case TokenType.Unquoted:
-        context.raise(ErrorKind.ExpectTokenUnquoted, token);
-        return {
-          pos: token.pos,
-          line: token.line,
-          column: token.column,
-          type: TokenType.Unquoted,
-          text: "",
-        };
-      case TokenType.Quoted:
-        context.raise(ErrorKind.ExpectTokenQuoted, token);
-        return {
-          pos: token.pos,
-          line: token.line,
-          column: token.column,
-          type: TokenType.Quoted,
-          text: "",
-        };
-    }
-  }
-
-  return token;
-}
-
 interface ParserOptions {
   fatal?: boolean;
 }
 
 export function parse(source: string, options: ParserOptions = {}) {
-  const tokens = tokenize(stripBOM(source));
-
   const errors: ParsingError[] = [];
   const raise: Context["raise"] = (kind, errorAt) => {
     const error = new ParsingError(kind, errorAt);
@@ -173,6 +63,8 @@ export function parse(source: string, options: ParserOptions = {}) {
     }
   };
 
+  const tokens = tokenize(stripBOM(source), raise);
+
   const context: Context = {
     sheet: {
       tracks: [],
@@ -181,44 +73,17 @@ export function parse(source: string, options: ParserOptions = {}) {
     state: {
       currentTrack: null,
       parsedCommand: 0,
-      skipLineBreak: false,
       commandToken: null!,
     },
     raise,
   };
 
-  let next = tokens.next();
-  while (!next.done && next.value.type !== TokenType.EOF) {
-    const token = next.value;
-    if (token.type === TokenType.Unquoted) {
-      context.state.commandToken = token;
-      parseCommand(token, tokens, context);
+  while (!tokens.isEof()) {
+    parseCommand(tokens, context);
 
-      if (context.state.skipLineBreak) {
-        context.state.skipLineBreak = false;
-      } else {
-        let next = tokens.next();
-        if (
-          !next.done &&
-          next.value.type !== TokenType.LineBreak &&
-          next.value.type !== TokenType.EOF
-        ) {
-          context.raise(ErrorKind.UnexpectedToken, next.value);
-        }
-
-        while (
-          !next.done &&
-          next.value.type !== TokenType.LineBreak &&
-          next.value.type !== TokenType.EOF
-        ) {
-          next = tokens.next();
-        }
-      }
-    } else if (token.type !== TokenType.LineBreak) {
-      raise(ErrorKind.UnexpectedToken, token);
+    if (!tokens.isEof()) {
+      tokens.expectLinebreak();
     }
-
-    next = tokens.next();
   }
 
   if (context.state.currentTrack) {
@@ -229,11 +94,12 @@ export function parse(source: string, options: ParserOptions = {}) {
 }
 
 function parseCommand(
-  commandToken: TokenUnquoted,
   tokens: TokenStream,
   context: Context,
 ): void {
-  const command = commandToken.text.toUpperCase();
+  const commandToken = tokens.expectString(TokenKind.Unquoted);
+  context.state.commandToken = commandToken;
+  const command = commandToken.value.toUpperCase();
 
   switch (command) {
     case "CATALOG":
@@ -275,6 +141,8 @@ function parseCommand(
     case "TRACK":
       parseTrack(tokens, context);
       break;
+    default:
+      return;
   }
 
   const commandEnumValue: number | undefined = Reflect.get(
@@ -296,28 +164,28 @@ function parseCatalog(
     context.raise(ErrorKind.DuplicatedCatalog, context.state.commandToken);
   }
 
-  const tokenCatalog = expectToken(tokens, TokenType.Unquoted, context);
+  const tokenCatalog = tokens.expectString(TokenKind.Unquoted);
   // unquoted text won't be empty
   // but tolerant parser will return an empty string if parsing failed
-  if (tokenCatalog.text === "") {
+  if (tokenCatalog.value === "") {
     return;
   }
-  if (!RE_CATALOG.test(tokenCatalog.text)) {
+  if (!RE_CATALOG.test(tokenCatalog.value)) {
     context.raise(ErrorKind.InvalidCatalogFormat, tokenCatalog);
   }
 
-  context.sheet.catalog = tokenCatalog.text;
+  context.sheet.catalog = tokenCatalog.value;
 }
 
 function parseCDTextFile(
   tokens: TokenStream,
   context: Context,
 ): void {
-  const token = tokens.next().value;
-  if (token.type === TokenType.Unquoted || token.type === TokenType.Quoted) {
-    context.sheet.CDTextFile = token.text;
+  const token = tokens.eatString();
+  if (token) {
+    context.sheet.CDTextFile = token.value;
   } else {
-    context.raise(ErrorKind.MissingArguments, token);
+    context.raise(ErrorKind.MissingArguments, tokens.getCurrentLocation());
   }
 }
 
@@ -337,18 +205,15 @@ function parseFile(
     );
   }
 
-  const fileNameToken = tokens.next().value;
-  if (
-    fileNameToken.type !== TokenType.Unquoted &&
-    fileNameToken.type !== TokenType.Quoted
-  ) {
-    context.raise(ErrorKind.MissingArguments, fileNameToken);
+  const fileNameToken = tokens.eatString();
+  if (!fileNameToken) {
+    context.raise(ErrorKind.MissingArguments, tokens.getCurrentLocation());
     return;
   }
 
-  const fileTypeToken = expectToken(tokens, TokenType.Unquoted, context);
+  const fileTypeToken = tokens.expectString(TokenKind.Unquoted);
   const fileType = (() => {
-    switch (fileTypeToken.text.toUpperCase()) {
+    switch (fileTypeToken.value.toUpperCase()) {
       case "BINARY":
         return FileType.Binary;
       case "MOTOROLA":
@@ -367,7 +232,7 @@ function parseFile(
     context.raise(ErrorKind.UnknownFileType, fileTypeToken);
   }
 
-  context.sheet.file = { name: fileNameToken.text, type: fileType };
+  context.sheet.file = { name: fileNameToken.value, type: fileType };
 }
 
 function parseFlags(
@@ -394,49 +259,43 @@ function parseFlags(
   let scms = false;
 
   let encounteredFlagsCount = 0;
-  while (true) {
-    const token = tokens.next().value;
-    if (token.type === TokenType.Unquoted) {
-      if (encounteredFlagsCount === 4) {
-        context.raise(ErrorKind.TooManyFlags, token);
-      } else {
-        switch (token.text) {
-          case "DCP":
-            digitalCopyPermitted = true;
-            break;
-          case "4CH":
-            fourChannelAudio = true;
-            break;
-          case "PRE":
-            preEmphasisEnabled = true;
-            break;
-          case "SCMS":
-            scms = true;
-            break;
-          default:
-            context.raise(ErrorKind.UnknownFlag, token);
-        }
-        encounteredFlagsCount += 1;
-      }
-    } else if (
-      token.type === TokenType.LineBreak || token.type === TokenType.EOF
-    ) {
-      if (encounteredFlagsCount === 0) {
-        context.raise(ErrorKind.NoFlags, token);
-      }
-
-      context.state.skipLineBreak = true;
-
-      context.sheet.flags = {
-        digitalCopyPermitted,
-        fourChannelAudio,
-        preEmphasisEnabled,
-        scms,
-      };
+  let token = tokens.eatString(TokenKind.Unquoted);
+  while (token) {
+    encounteredFlagsCount += 1;
+    if (encounteredFlagsCount === 4) {
+      context.raise(ErrorKind.TooManyFlags, token);
     } else {
-      context.raise(ErrorKind.UnexpectedToken, token);
+      switch (token.value) {
+        case "DCP":
+          digitalCopyPermitted = true;
+          break;
+        case "4CH":
+          fourChannelAudio = true;
+          break;
+        case "PRE":
+          preEmphasisEnabled = true;
+          break;
+        case "SCMS":
+          scms = true;
+          break;
+        default:
+          context.raise(ErrorKind.UnknownFlag, token);
+      }
     }
+
+    token = tokens.eatString(TokenKind.Unquoted);
   }
+
+  if (encounteredFlagsCount === 0) {
+    context.raise(ErrorKind.NoFlags, tokens.getCurrentLocation());
+  }
+
+  context.sheet.flags = {
+    digitalCopyPermitted,
+    fourChannelAudio,
+    preEmphasisEnabled,
+    scms,
+  };
 }
 
 const RE_TIME = /^\d{2}:\d{2}:\d{2}$/;
@@ -447,14 +306,14 @@ function parseIndex(tokens: TokenStream, context: Context): void {
     return;
   }
 
-  const indexNumberToken = expectToken(tokens, TokenType.Unquoted, context);
-  const number = Number.parseInt(indexNumberToken.text);
+  const indexNumberToken = tokens.expectString(TokenKind.Unquoted);
+  const number = Number.parseInt(indexNumberToken.value);
   if (number < 0 || number > 99) {
     context.raise(ErrorKind.InvalidIndexNumberRange, indexNumberToken);
   }
 
-  const indexTimeToken = expectToken(tokens, TokenType.Unquoted, context);
-  const matches = RE_TIME.exec(indexTimeToken.text);
+  const indexTimeToken = tokens.expectString(TokenKind.Unquoted);
+  const matches = RE_TIME.exec(indexTimeToken.value);
   if (!matches) {
     context.raise(ErrorKind.InvalidTimeFormat, indexTimeToken);
     context.state.currentTrack.indexes.push({
@@ -491,8 +350,8 @@ function parseISRC(
     );
   }
 
-  const token = expectToken(tokens, TokenType.Unquoted, context);
-  const isrc = token.text;
+  const token = tokens.expectString(TokenKind.Unquoted);
+  const isrc = token.value;
   if (!RE_ISRC.test(isrc)) {
     context.raise(ErrorKind.InvalidISRCFormat, token);
   }
@@ -505,16 +364,16 @@ function parseISRC(
 }
 
 function parsePerformer(tokens: TokenStream, context: Context): void {
-  const token = tokens.next().value;
-  if (token.type !== TokenType.Unquoted && token.type !== TokenType.Quoted) {
-    context.raise(ErrorKind.MissingArguments, token);
+  const token = tokens.eatString();
+  if (!token) {
+    context.raise(ErrorKind.MissingArguments, tokens.getCurrentLocation());
     return;
   }
 
   if (context.state.currentTrack) {
-    context.state.currentTrack.performer = token.text;
+    context.state.currentTrack.performer = token.value;
   } else {
-    context.sheet.performer = token.text;
+    context.sheet.performer = token.value;
   }
 }
 
@@ -536,8 +395,8 @@ function parsePostGap(tokens: TokenStream, context: Context): void {
     );
   }
 
-  const token = expectToken(tokens, TokenType.Unquoted, context);
-  const matches = RE_TIME.exec(token.text);
+  const token = tokens.expectString(TokenKind.Unquoted);
+  const matches = RE_TIME.exec(token.value);
   if (matches) {
     context.state.currentTrack.postGap = [
       Number.parseInt(matches[1]),
@@ -567,8 +426,8 @@ function parsePreGap(tokens: TokenStream, context: Context): void {
     );
   }
 
-  const token = expectToken(tokens, TokenType.Unquoted, context);
-  const matches = RE_TIME.exec(token.text);
+  const token = tokens.expectString(TokenKind.Unquoted);
+  const matches = RE_TIME.exec(token.value);
   if (matches) {
     context.state.currentTrack.preGap = [
       Number.parseInt(matches[1]),
@@ -582,41 +441,40 @@ function parsePreGap(tokens: TokenStream, context: Context): void {
 
 function parseRem(tokens: TokenStream, context: Context): void {
   const commentParts: string[] = [];
-  let token = tokens.next().value;
-  while (token.type === TokenType.Unquoted || token.type === TokenType.Quoted) {
-    commentParts.push(token.text);
-    token = tokens.next().value;
+  let token = tokens.eatString();
+  while (token) {
+    commentParts.push(token.value);
+    token = tokens.eatString();
   }
 
-  context.state.skipLineBreak = true;
   context.sheet.comments.push(commentParts.join(" "));
 }
 
 function parseSongWriter(tokens: TokenStream, context: Context): void {
-  const token = tokens.next().value;
-  if (token.type !== TokenType.Unquoted && token.type !== TokenType.Quoted) {
-    context.raise(ErrorKind.MissingArguments, token);
+  const token = tokens.eatString();
+  if (!token) {
+    context.raise(ErrorKind.MissingArguments, tokens.getCurrentLocation());
     return;
   }
 
   if (context.state.currentTrack) {
-    context.state.currentTrack.songWriter = token.text;
+    context.state.currentTrack.songWriter = token.value;
   } else {
-    context.sheet.songWriter = token.text;
+    context.sheet.songWriter = token.value;
   }
 }
 
 function parseTitle(tokens: TokenStream, context: Context): void {
-  const token = tokens.next().value;
-  if (token.type !== TokenType.Unquoted && token.type !== TokenType.Quoted) {
-    context.raise(ErrorKind.MissingArguments, token);
+  const token = tokens.eatString();
+  if (!token) {
+    context.raise(ErrorKind.MissingArguments, tokens.getCurrentLocation());
     return;
   }
 
   if (context.state.currentTrack) {
-    context.state.currentTrack.title = token.text;
+    context.state.currentTrack.title = token.value;
   } else {
-    context.sheet.title = token.text;
+    context.sheet.title = token.value;
   }
 }
 
@@ -634,15 +492,15 @@ function parseTrack(tokens: TokenStream, context: Context): void {
     context.sheet.tracks.push(context.state.currentTrack);
   }
 
-  const trackNumberToken = expectToken(tokens, TokenType.Unquoted, context);
-  const trackNumber = Number.parseInt(trackNumberToken.text);
+  const trackNumberToken = tokens.expectString(TokenKind.Unquoted);
+  const trackNumber = Number.parseInt(trackNumberToken.value);
   if (trackNumber < 1 || trackNumber > 99) {
     context.raise(ErrorKind.InvalidTrackNumberRange, trackNumberToken);
   }
 
-  const dataTypeToken = expectToken(tokens, TokenType.Unquoted, context);
+  const dataTypeToken = tokens.expectString(TokenKind.Unquoted);
   const dataType = (() => {
-    switch (dataTypeToken.text.toUpperCase()) {
+    switch (dataTypeToken.value.toUpperCase()) {
       case "AUDIO":
         return TrackDataType["AUDIO"];
       case "CDG":

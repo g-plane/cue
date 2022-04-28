@@ -1,7 +1,7 @@
 import { assertEquals } from "https://deno.land/std@0.104.0/testing/asserts.ts";
 import { ErrorKind } from "./errors.ts";
 import { parse } from "./parser.ts";
-import { FileType } from "./types.ts";
+import { FileType, TrackDataType } from "./types.ts";
 
 Deno.test("parse valid catalog", () => {
   assertEquals(parse(`CATALOG 1234567890123`), {
@@ -189,8 +189,13 @@ Deno.test("disallow multiple commands on the same line", () => {
   const { sheet, errors: [error] } = parse(
     `CDTEXTFILE cdt.cdt FILE audio.wav WAV`,
   );
-  assertEquals(sheet, { CDTextFile: "cdt.cdt", tracks: [], comments: [] });
-  assertEquals(error.kind, ErrorKind.UnexpectedToken);
+  assertEquals(sheet, {
+    CDTextFile: "cdt.cdt",
+    file: { name: "audio.wav", type: FileType.Unknown },
+    tracks: [],
+    comments: [],
+  });
+  assertEquals(error.kind, ErrorKind.ExpectLineBreak);
   assertEquals(error.errorAt.line, 1);
   assertEquals(error.errorAt.column, 20);
 });

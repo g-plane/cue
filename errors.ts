@@ -2,8 +2,9 @@ import type { Location } from "./types.ts";
 
 export enum ErrorKind {
   Reserved,
+  UnterminatedQuotedString,
+  ExpectLineBreak,
   ExpectTokenEOF,
-  ExpectTokenLineBreak,
   ExpectTokenUnquoted,
   ExpectTokenQuoted,
   UnexpectedToken,
@@ -34,10 +35,12 @@ export function translateErrorMessage(kind: ErrorKind): string {
   switch (kind) {
     case ErrorKind.Reserved:
       throw new TypeError("unreachable code");
+    case ErrorKind.UnterminatedQuotedString:
+      return "Quoted string isn't terminated.";
+    case ErrorKind.ExpectLineBreak:
+      return "Expect line break.";
     case ErrorKind.ExpectTokenEOF:
       return "Expect end of file.";
-    case ErrorKind.ExpectTokenLineBreak:
-      return "Expect line break.";
     case ErrorKind.ExpectTokenUnquoted:
       return "Expect an unquoted string.";
     case ErrorKind.ExpectTokenQuoted:
