@@ -199,3 +199,21 @@ Deno.test("disallow multiple commands on the same line", () => {
   assertEquals(error.errorAt.line, 1);
   assertEquals(error.errorAt.column, 20);
 });
+
+Deno.test("parse valid FLAGS command", () => {
+  assertEquals(parse(`TRACK 20 AUDIO\nFLAGS DCP`), {
+    sheet: {
+      flags: {
+        digitalCopyPermitted: true,
+        fourChannelAudio: false,
+        preEmphasisEnabled: false,
+        scms: false,
+      },
+      tracks: [
+        { dataType: TrackDataType.AUDIO, indexes: [], trackNumber: 20 },
+      ],
+      comments: [],
+    },
+    errors: [],
+  });
+});
