@@ -262,25 +262,27 @@ function parseFlags(
   let token = tokens.eatString(TokenKind.Unquoted);
   while (token?.value) {
     encounteredFlagsCount += 1;
-    if (encounteredFlagsCount === 4) {
+    switch (token.value) {
+      case "DCP":
+        digitalCopyPermitted = true;
+        break;
+      case "4CH":
+        fourChannelAudio = true;
+        break;
+      case "PRE":
+        preEmphasisEnabled = true;
+        break;
+      case "SCMS":
+        scms = true;
+        break;
+      default:
+        context.raise(ErrorKind.UnknownFlag, token);
+    }
+
+    // Flags can't be more than 4,
+    // but make sure report error only once.
+    if (encounteredFlagsCount === 5) {
       context.raise(ErrorKind.TooManyFlags, token);
-    } else {
-      switch (token.value) {
-        case "DCP":
-          digitalCopyPermitted = true;
-          break;
-        case "4CH":
-          fourChannelAudio = true;
-          break;
-        case "PRE":
-          preEmphasisEnabled = true;
-          break;
-        case "SCMS":
-          scms = true;
-          break;
-        default:
-          context.raise(ErrorKind.UnknownFlag, token);
-      }
     }
 
     token = tokens.eatString(TokenKind.Unquoted);
