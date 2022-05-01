@@ -216,4 +216,20 @@ Deno.test("parse valid FLAGS command", () => {
     },
     errors: [],
   });
+
+  assertEquals(parse(`TRACK 20 AUDIO\nFLAGS 4CH\n`), {
+    sheet: {
+      flags: {
+        digitalCopyPermitted: false,
+        fourChannelAudio: true,
+        preEmphasisEnabled: false,
+        scms: false,
+      },
+      tracks: [
+        { dataType: TrackDataType.AUDIO, indexes: [], trackNumber: 20 },
+      ],
+      comments: [],
+    },
+    errors: [],
+  });
 });

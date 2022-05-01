@@ -260,7 +260,7 @@ function parseFlags(
 
   let encounteredFlagsCount = 0;
   let token = tokens.eatString(TokenKind.Unquoted);
-  while (token) {
+  while (token?.value) {
     encounteredFlagsCount += 1;
     if (encounteredFlagsCount === 4) {
       context.raise(ErrorKind.TooManyFlags, token);
@@ -442,7 +442,7 @@ function parsePreGap(tokens: TokenStream, context: Context): void {
 function parseRem(tokens: TokenStream, context: Context): void {
   const commentParts: string[] = [];
   let token = tokens.eatString();
-  while (token && !tokens.isLinebreak()) {
+  while (token?.value) {
     commentParts.push(token.value);
     token = tokens.eatString();
   }
