@@ -32,6 +32,7 @@ export type Token = TokenEOF | TokenUnquoted | TokenQuoted;
 export interface TokenStream {
   expectLinebreak(): void;
   eatLinebreak(): boolean;
+  isLinebreak(): boolean;
   expectString(): TokenQuoted | TokenUnquoted;
   expectString(kind: TokenKind.Quoted): TokenQuoted;
   expectString(kind: TokenKind.Unquoted): TokenUnquoted;
@@ -150,6 +151,12 @@ export function tokenize(
       } else {
         return false;
       }
+    },
+    isLinebreak() {
+      const currentChar = source.charCodeAt(offset),
+        nextChar = source.charCodeAt(offset + 1);
+      return currentChar === 10 /* \n */ ||
+        (currentChar === 13 && nextChar === 10 /* \r\n */);
     },
     expectString(kind?: TokenKind.Quoted | TokenKind.Unquoted) {
       const token = this.eatString();

@@ -442,7 +442,7 @@ function parsePreGap(tokens: TokenStream, context: Context): void {
 function parseRem(tokens: TokenStream, context: Context): void {
   const commentParts: string[] = [];
   let token = tokens.eatString();
-  while (token) {
+  while (token && !tokens.isLinebreak()) {
     commentParts.push(token.value);
     token = tokens.eatString();
   }
