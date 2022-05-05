@@ -300,7 +300,7 @@ function parseFlags(
   };
 }
 
-const RE_TIME = /^\d{2}:\d{2}:\d{2}$/;
+const RE_TIME = /^(\d{2}):(\d{2}):(\d{2})$/;
 
 function parseIndex(tokens: TokenStream, context: Context): void {
   if (!context.state.currentTrack) {
