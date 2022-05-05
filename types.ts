@@ -9,7 +9,6 @@ export interface CueSheeet {
   CDTextFile?: string;
   file?: File;
   flags?: Flags;
-  isrc?: string;
   title?: string;
   performer?: string;
   songWriter?: string;

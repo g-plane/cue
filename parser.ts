@@ -375,8 +375,6 @@ function parseISRC(
 
   if (context.state.currentTrack) {
     context.state.currentTrack.isrc = isrc;
-  } else {
-    context.sheet.isrc = isrc;
   }
 }
 
