@@ -1,4 +1,4 @@
-import { assertEquals } from "https://deno.land/std@0.104.0/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.137.0/testing/asserts.ts";
 import { describe, it } from "https://deno.land/std@0.137.0/testing/bdd.ts";
 import { ErrorKind } from "./errors.ts";
 import { parse } from "./parser.ts";
