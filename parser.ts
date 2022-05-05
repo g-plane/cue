@@ -300,7 +300,7 @@ function parseFlags(
   };
 }
 
-const RE_TIME = /^(\d{2}):(\d{2}):(\d{2})$/;
+const RE_TIME = /^(\d{2,}):([0-5]\d):(\d{2})$/;
 
 function parseIndex(tokens: TokenStream, context: Context): void {
   if (!context.state.currentTrack) {
@@ -310,7 +310,7 @@ function parseIndex(tokens: TokenStream, context: Context): void {
 
   const indexNumberToken = tokens.expectString(TokenKind.Unquoted);
   const number = Number.parseInt(indexNumberToken.value);
-  if (number < 0 || number > 99) {
+  if (number < 0 || number > 99 || Number.isNaN(number)) {
     context.raise(ErrorKind.InvalidIndexNumberRange, indexNumberToken);
   }
 
@@ -325,14 +325,29 @@ function parseIndex(tokens: TokenStream, context: Context): void {
     return;
   }
 
-  context.state.currentTrack.indexes.push({
-    number,
-    startingTime: [
-      Number.parseInt(matches[1]),
-      Number.parseInt(matches[2]),
-      Number.parseInt(matches[3]),
-    ],
-  });
+  const startingTime: [number, number, number] = [
+    Number.parseInt(matches[1]),
+    Number.parseInt(matches[2]),
+    Number.parseInt(matches[3]),
+  ];
+
+  const isFirstIndex = context.state.currentTrack.indexes.length === 0;
+  if (isFirstIndex) {
+    if (number !== 0 && number !== 1) {
+      context.raise(ErrorKind.InvalidFirstIndexNumber, indexNumberToken);
+    }
+    if (
+      startingTime[0] !== 0 || startingTime[1] !== 0 || startingTime[2] !== 0
+    ) {
+      context.raise(ErrorKind.InvalidFirstIndexTime, indexTimeToken);
+    }
+  }
+
+  if (startingTime[2] > 74) {
+    context.raise(ErrorKind.FramesTooLarge, indexTimeToken);
+  }
+
+  context.state.currentTrack.indexes.push({ number, startingTime });
 }
 
 const RE_ISRC = /^[a-z0-9]{5}\d{7}$/i;

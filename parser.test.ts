@@ -465,3 +465,141 @@ Deno.test("FLAGS command arguments can't be quoted", () => {
   assertEquals(error.position.line, 2);
   assertEquals(error.position.column, 12);
 });
+
+Deno.test("parse valid INDEX command", () => {
+  assertEquals(parse("TRACK 1 AUDIO\nINDEX 01 00:00:00"), {
+    sheet: {
+      comments: [],
+      tracks: [{
+        trackNumber: 1,
+        dataType: TrackDataType.AUDIO,
+        indexes: [{ number: 1, startingTime: [0, 0, 0] }],
+      }],
+    },
+    errors: [],
+  });
+
+  assertEquals(parse("TRACK 1 AUDIO\nINDEX 00 00:00:00\nINDEX 01 123:45:56"), {
+    sheet: {
+      comments: [],
+      tracks: [{
+        trackNumber: 1,
+        dataType: TrackDataType.AUDIO,
+        indexes: [
+          { number: 0, startingTime: [0, 0, 0] },
+          { number: 1, startingTime: [123, 45, 56] },
+        ],
+      }],
+    },
+    errors: [],
+  });
+});
+
+Deno.test("first index must be 0 or 1", () => {
+  const { sheet, errors: [error] } = parse("TRACK 1 AUDIO\nINDEX 02 00:00:00");
+  assertEquals(sheet, {
+    comments: [],
+    tracks: [{
+      trackNumber: 1,
+      dataType: TrackDataType.AUDIO,
+      indexes: [{ number: 2, startingTime: [0, 0, 0] }],
+    }],
+  });
+  assertEquals(error.kind, ErrorKind.InvalidFirstIndexNumber);
+  assertEquals(error.position.line, 2);
+  assertEquals(error.position.column, 7);
+});
+
+Deno.test("first index must start from 00:00:00", () => {
+  const { sheet, errors: [error] } = parse("TRACK 1 AUDIO\nINDEX 00 00:00:01");
+  assertEquals(sheet, {
+    comments: [],
+    tracks: [{
+      trackNumber: 1,
+      dataType: TrackDataType.AUDIO,
+      indexes: [{ number: 0, startingTime: [0, 0, 1] }],
+    }],
+  });
+  assertEquals(error.kind, ErrorKind.InvalidFirstIndexTime);
+  assertEquals(error.position.line, 2);
+  assertEquals(error.position.column, 10);
+});
+
+Deno.test("invalid index number", () => {
+  const { sheet, errors: [error] } = parse(
+    "TRACK 1 AUDIO\nINDEX 00 00:00:00\nINDEX a 00:02:00",
+  );
+  assertEquals(sheet, {
+    comments: [],
+    tracks: [{
+      trackNumber: 1,
+      dataType: TrackDataType.AUDIO,
+      indexes: [
+        { number: 0, startingTime: [0, 0, 0] },
+        { number: NaN, startingTime: [0, 2, 0] },
+      ],
+    }],
+  });
+  assertEquals(error.kind, ErrorKind.InvalidIndexNumberRange);
+  assertEquals(error.position.line, 3);
+  assertEquals(error.position.column, 7);
+});
+
+Deno.test("index number out of range", () => {
+  const { sheet, errors: [error] } = parse(
+    "TRACK 1 AUDIO\nINDEX 00 00:00:00\nINDEX 100 00:02:00",
+  );
+  assertEquals(sheet, {
+    comments: [],
+    tracks: [{
+      trackNumber: 1,
+      dataType: TrackDataType.AUDIO,
+      indexes: [
+        { number: 0, startingTime: [0, 0, 0] },
+        { number: 100, startingTime: [0, 2, 0] },
+      ],
+    }],
+  });
+  assertEquals(error.kind, ErrorKind.InvalidIndexNumberRange);
+  assertEquals(error.position.line, 3);
+  assertEquals(error.position.column, 7);
+});
+
+Deno.test("invalid index time format", () => {
+  const { sheet, errors: [error] } = parse(
+    "TRACK 1 AUDIO\nINDEX 00 0:1:0",
+  );
+  assertEquals(sheet, {
+    comments: [],
+    tracks: [{
+      trackNumber: 1,
+      dataType: TrackDataType.AUDIO,
+      indexes: [
+        { number: 0, startingTime: [0, 0, 0] },
+      ],
+    }],
+  });
+  assertEquals(error.kind, ErrorKind.InvalidTimeFormat);
+  assertEquals(error.position.line, 2);
+  assertEquals(error.position.column, 10);
+});
+
+Deno.test("frames too large", () => {
+  const { sheet, errors: [error] } = parse(
+    "TRACK 1 AUDIO\nINDEX 00 00:00:00\nINDEX 01 00:00:75",
+  );
+  assertEquals(sheet, {
+    comments: [],
+    tracks: [{
+      trackNumber: 1,
+      dataType: TrackDataType.AUDIO,
+      indexes: [
+        { number: 0, startingTime: [0, 0, 0] },
+        { number: 1, startingTime: [0, 0, 75] },
+      ],
+    }],
+  });
+  assertEquals(error.kind, ErrorKind.FramesTooLarge);
+  assertEquals(error.position.line, 3);
+  assertEquals(error.position.column, 10);
+});

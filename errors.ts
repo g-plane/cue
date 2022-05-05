@@ -19,6 +19,9 @@ export enum ErrorKind {
   TooManyFlags,
   InvalidIndexNumberRange,
   InvalidTimeFormat,
+  FramesTooLarge,
+  InvalidFirstIndexNumber,
+  InvalidFirstIndexTime,
   InvalidISRCCommandLocation,
   InvalidISRCFormat,
   CurrentTrackRequired,
@@ -68,9 +71,15 @@ export function translateErrorMessage(kind: ErrorKind): string {
     case ErrorKind.UnknownFlag:
       return "Unknown flag. Only 'DCP', '4CH', 'PRE' and 'SCMS' are allowed.";
     case ErrorKind.InvalidIndexNumberRange:
-      return "Index number range must be from 0 to 99.";
+      return "Index number must be a number between 0 and 99. (inclusive)";
     case ErrorKind.InvalidTimeFormat:
       return "Time format must be 'mm:ss:ff'.";
+    case ErrorKind.FramesTooLarge:
+      return "Frames can't be greater than 74.";
+    case ErrorKind.InvalidFirstIndexNumber:
+      return "Number of first index must be 0 or 1.";
+    case ErrorKind.InvalidFirstIndexTime:
+      return "First index of a track must start at 00:00:00.";
     case ErrorKind.InvalidISRCCommandLocation:
       return "'ISRC' command must be specified after a 'TRACK' command, but before any 'INDEX' commands.";
     case ErrorKind.InvalidISRCFormat:
