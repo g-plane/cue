@@ -1,5 +1,5 @@
 import { ErrorKind } from "./errors.ts";
-import type { Location } from "./types.ts";
+import type { Position } from "./types.ts";
 
 export enum TokenKind {
   EOF,
@@ -40,12 +40,12 @@ export interface TokenStream {
   eatString(kind: TokenKind.Quoted): TokenQuoted | undefined;
   eatString(kind: TokenKind.Unquoted): TokenUnquoted | undefined;
   isEof(): boolean;
-  getCurrentLocation(): Location;
+  getCurrentLocation(): Position;
 }
 
 export function tokenize(
   source: string,
-  onError: (kind: ErrorKind, errorAt: Location) => void,
+  onError: (kind: ErrorKind, errorAt: Position) => void,
 ) {
   const len = source.length;
   let offset = 0, line = 1, column = 1;

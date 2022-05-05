@@ -24,14 +24,14 @@ Deno.test("invalid catalog format", () => {
   const { sheet: sheet1, errors: [error1] } = parse(`CATALOG abcdefghijklm`);
   assertEquals(sheet1, { catalog: "abcdefghijklm", tracks: [], comments: [] });
   assertEquals(error1.kind, ErrorKind.InvalidCatalogFormat);
-  assertEquals(error1.errorAt.line, 1);
-  assertEquals(error1.errorAt.column, 9);
+  assertEquals(error1.position.line, 1);
+  assertEquals(error1.position.column, 9);
 
   const { sheet: sheet2, errors: [error2] } = parse(`CATALOG 1234`);
   assertEquals(sheet2, { catalog: "1234", tracks: [], comments: [] });
   assertEquals(error2.kind, ErrorKind.InvalidCatalogFormat);
-  assertEquals(error2.errorAt.line, 1);
-  assertEquals(error2.errorAt.column, 9);
+  assertEquals(error2.position.line, 1);
+  assertEquals(error2.position.column, 9);
 });
 
 Deno.test("duplicated catalog", () => {
@@ -41,16 +41,16 @@ CATALOG 0987654321098`;
   const { sheet, errors: [error] } = parse(source);
   assertEquals(sheet, { catalog: "0987654321098", tracks: [], comments: [] });
   assertEquals(error.kind, ErrorKind.DuplicatedCatalog);
-  assertEquals(error.errorAt.line, 2);
-  assertEquals(error.errorAt.column, 1);
+  assertEquals(error.position.line, 2);
+  assertEquals(error.position.column, 1);
 });
 
 Deno.test("missing catalog argument", () => {
   const { sheet, errors: [error] } = parse(`CATALOG`);
   assertEquals(sheet, { tracks: [], comments: [] });
   assertEquals(error.kind, ErrorKind.ExpectTokenUnquoted);
-  assertEquals(error.errorAt.line, 1);
-  assertEquals(error.errorAt.column, 8);
+  assertEquals(error.position.line, 1);
+  assertEquals(error.position.column, 8);
 });
 
 Deno.test("parse valid CD Text File", () => {
@@ -81,8 +81,8 @@ Deno.test("missing CD Text File argument", () => {
   const { sheet, errors: [error] } = parse(`CDTEXTFILE `);
   assertEquals(sheet, { tracks: [], comments: [] });
   assertEquals(error.kind, ErrorKind.MissingArguments);
-  assertEquals(error.errorAt.line, 1);
-  assertEquals(error.errorAt.column, 12);
+  assertEquals(error.position.line, 1);
+  assertEquals(error.position.column, 12);
 });
 
 Deno.test("parse valid FILE command", () => {
@@ -154,8 +154,8 @@ Deno.test("missing FILE command file name argument", () => {
   const { sheet, errors: [error] } = parse(`FILE `);
   assertEquals(sheet, { tracks: [], comments: [] });
   assertEquals(error.kind, ErrorKind.MissingArguments);
-  assertEquals(error.errorAt.line, 1);
-  assertEquals(error.errorAt.column, 6);
+  assertEquals(error.position.line, 1);
+  assertEquals(error.position.column, 6);
 });
 
 Deno.test("missing FILE command file type argument", () => {
@@ -166,11 +166,11 @@ Deno.test("missing FILE command file type argument", () => {
     comments: [],
   });
   assertEquals(errors[0].kind, ErrorKind.ExpectTokenUnquoted);
-  assertEquals(errors[0].errorAt.line, 1);
-  assertEquals(errors[0].errorAt.column, 15);
+  assertEquals(errors[0].position.line, 1);
+  assertEquals(errors[0].position.column, 15);
   assertEquals(errors[1].kind, ErrorKind.UnknownFileType);
-  assertEquals(errors[1].errorAt.line, 1);
-  assertEquals(errors[1].errorAt.column, 15);
+  assertEquals(errors[1].position.line, 1);
+  assertEquals(errors[1].position.column, 15);
 });
 
 Deno.test("invalid FILE command file type argument", () => {
@@ -181,8 +181,8 @@ Deno.test("invalid FILE command file type argument", () => {
     comments: [],
   });
   assertEquals(error.kind, ErrorKind.UnknownFileType);
-  assertEquals(error.errorAt.line, 1);
-  assertEquals(error.errorAt.column, 16);
+  assertEquals(error.position.line, 1);
+  assertEquals(error.position.column, 16);
 });
 
 Deno.test("disallow multiple commands on the same line", () => {
@@ -196,8 +196,8 @@ Deno.test("disallow multiple commands on the same line", () => {
     comments: [],
   });
   assertEquals(error.kind, ErrorKind.ExpectLineBreak);
-  assertEquals(error.errorAt.line, 1);
-  assertEquals(error.errorAt.column, 20);
+  assertEquals(error.position.line, 1);
+  assertEquals(error.position.column, 20);
 });
 
 Deno.test("parse valid FLAGS command", () => {
@@ -297,8 +297,8 @@ Deno.test("unknown FLAGS command flag", () => {
     comments: [],
   });
   assertEquals(error.kind, ErrorKind.UnknownFlag);
-  assertEquals(error.errorAt.line, 2);
-  assertEquals(error.errorAt.column, 7);
+  assertEquals(error.position.line, 2);
+  assertEquals(error.position.column, 7);
 });
 
 Deno.test("unknown FLAGS command flag with parsed known flag", () => {
@@ -316,8 +316,8 @@ Deno.test("unknown FLAGS command flag with parsed known flag", () => {
     comments: [],
   });
   assertEquals(error.kind, ErrorKind.UnknownFlag);
-  assertEquals(error.errorAt.line, 2);
-  assertEquals(error.errorAt.column, 12);
+  assertEquals(error.position.line, 2);
+  assertEquals(error.position.column, 12);
 });
 
 Deno.test("FLAGS command flag should be case-sensitive", () => {
@@ -335,8 +335,8 @@ Deno.test("FLAGS command flag should be case-sensitive", () => {
     comments: [],
   });
   assertEquals(error.kind, ErrorKind.UnknownFlag);
-  assertEquals(error.errorAt.line, 2);
-  assertEquals(error.errorAt.column, 7);
+  assertEquals(error.position.line, 2);
+  assertEquals(error.position.column, 7);
 });
 
 Deno.test("FLAGS command contains too many flags", () => {
@@ -356,8 +356,8 @@ Deno.test("FLAGS command contains too many flags", () => {
     comments: [],
   });
   assertEquals(error.kind, ErrorKind.TooManyFlags);
-  assertEquals(error.errorAt.line, 2);
-  assertEquals(error.errorAt.column, 24);
+  assertEquals(error.position.line, 2);
+  assertEquals(error.position.column, 24);
 });
 
 Deno.test("duplicated FLAGS command", () => {
@@ -378,8 +378,8 @@ Deno.test("duplicated FLAGS command", () => {
     comments: [],
   });
   assertEquals(error.kind, ErrorKind.DuplicatedFlagsCommand);
-  assertEquals(error.errorAt.line, 3);
-  assertEquals(error.errorAt.column, 1);
+  assertEquals(error.position.line, 3);
+  assertEquals(error.position.column, 1);
 });
 
 Deno.test("FLAGS command without arguments", () => {
@@ -399,8 +399,8 @@ Deno.test("FLAGS command without arguments", () => {
     comments: [],
   });
   assertEquals(error.kind, ErrorKind.NoFlags);
-  assertEquals(error.errorAt.line, 2);
-  assertEquals(error.errorAt.column, 6);
+  assertEquals(error.position.line, 2);
+  assertEquals(error.position.column, 6);
 });
 
 Deno.test("FLAGS command must come after TRACK command", () => {
@@ -418,8 +418,8 @@ Deno.test("FLAGS command must come after TRACK command", () => {
     comments: [],
   });
   assertEquals(error.kind, ErrorKind.InvalidFlagsCommandLocation);
-  assertEquals(error.errorAt.line, 1);
-  assertEquals(error.errorAt.column, 1);
+  assertEquals(error.position.line, 1);
+  assertEquals(error.position.column, 1);
 });
 
 Deno.test("FLAGS command must come before INDEX command", () => {
@@ -441,8 +441,8 @@ Deno.test("FLAGS command must come before INDEX command", () => {
     comments: [],
   });
   assertEquals(error.kind, ErrorKind.InvalidFlagsCommandLocation);
-  assertEquals(error.errorAt.line, 3);
-  assertEquals(error.errorAt.column, 1);
+  assertEquals(error.position.line, 3);
+  assertEquals(error.position.column, 1);
 });
 
 Deno.test("FLAGS command arguments can't be quoted", () => {
@@ -462,6 +462,6 @@ Deno.test("FLAGS command arguments can't be quoted", () => {
     comments: [],
   });
   assertEquals(error.kind, ErrorKind.NoFlags);
-  assertEquals(error.errorAt.line, 2);
-  assertEquals(error.errorAt.column, 12);
+  assertEquals(error.position.line, 2);
+  assertEquals(error.position.column, 12);
 });
