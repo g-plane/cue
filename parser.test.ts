@@ -232,4 +232,236 @@ Deno.test("parse valid FLAGS command", () => {
     },
     errors: [],
   });
+
+  assertEquals(parse(`TRACK 20 AUDIO\nFLAGS PRE\n`), {
+    sheet: {
+      flags: {
+        digitalCopyPermitted: false,
+        fourChannelAudio: false,
+        preEmphasisEnabled: true,
+        scms: false,
+      },
+      tracks: [
+        { dataType: TrackDataType.AUDIO, indexes: [], trackNumber: 20 },
+      ],
+      comments: [],
+    },
+    errors: [],
+  });
+
+  assertEquals(parse(`TRACK 20 AUDIO\nFLAGS SCMS\n`), {
+    sheet: {
+      flags: {
+        digitalCopyPermitted: false,
+        fourChannelAudio: false,
+        preEmphasisEnabled: false,
+        scms: true,
+      },
+      tracks: [
+        { dataType: TrackDataType.AUDIO, indexes: [], trackNumber: 20 },
+      ],
+      comments: [],
+    },
+    errors: [],
+  });
+
+  assertEquals(parse(`TRACK 20 AUDIO\nFLAGS DCP PRE SCMS 4CH\n`), {
+    sheet: {
+      flags: {
+        digitalCopyPermitted: true,
+        fourChannelAudio: true,
+        preEmphasisEnabled: true,
+        scms: true,
+      },
+      tracks: [
+        { dataType: TrackDataType.AUDIO, indexes: [], trackNumber: 20 },
+      ],
+      comments: [],
+    },
+    errors: [],
+  });
+});
+
+Deno.test("unknown FLAGS command flag", () => {
+  const { sheet, errors: [error] } = parse(`TRACK 20 AUDIO\nFLAGS ABC\n`);
+  assertEquals(sheet, {
+    flags: {
+      digitalCopyPermitted: false,
+      fourChannelAudio: false,
+      preEmphasisEnabled: false,
+      scms: false,
+    },
+    tracks: [
+      { dataType: TrackDataType.AUDIO, indexes: [], trackNumber: 20 },
+    ],
+    comments: [],
+  });
+  assertEquals(error.kind, ErrorKind.UnknownFlag);
+  assertEquals(error.errorAt.line, 2);
+  assertEquals(error.errorAt.column, 7);
+});
+
+Deno.test("unknown FLAGS command flag with parsed known flag", () => {
+  const { sheet, errors: [error] } = parse(`TRACK 20 AUDIO\nFLAGS SCMS ABC\n`);
+  assertEquals(sheet, {
+    flags: {
+      digitalCopyPermitted: false,
+      fourChannelAudio: false,
+      preEmphasisEnabled: false,
+      scms: true,
+    },
+    tracks: [
+      { dataType: TrackDataType.AUDIO, indexes: [], trackNumber: 20 },
+    ],
+    comments: [],
+  });
+  assertEquals(error.kind, ErrorKind.UnknownFlag);
+  assertEquals(error.errorAt.line, 2);
+  assertEquals(error.errorAt.column, 12);
+});
+
+Deno.test("FLAGS command flag should be case-sensitive", () => {
+  const { sheet, errors: [error] } = parse(`TRACK 20 AUDIO\nFLAGS pre\n`);
+  assertEquals(sheet, {
+    flags: {
+      digitalCopyPermitted: false,
+      fourChannelAudio: false,
+      preEmphasisEnabled: false,
+      scms: false,
+    },
+    tracks: [
+      { dataType: TrackDataType.AUDIO, indexes: [], trackNumber: 20 },
+    ],
+    comments: [],
+  });
+  assertEquals(error.kind, ErrorKind.UnknownFlag);
+  assertEquals(error.errorAt.line, 2);
+  assertEquals(error.errorAt.column, 7);
+});
+
+Deno.test("FLAGS command contains too many flags", () => {
+  const { sheet, errors: [error] } = parse(
+    `TRACK 20 AUDIO\nFLAGS 4CH PRE SCMS DCP 4CH\n`,
+  );
+  assertEquals(sheet, {
+    flags: {
+      digitalCopyPermitted: true,
+      fourChannelAudio: true,
+      preEmphasisEnabled: true,
+      scms: true,
+    },
+    tracks: [
+      { dataType: TrackDataType.AUDIO, indexes: [], trackNumber: 20 },
+    ],
+    comments: [],
+  });
+  assertEquals(error.kind, ErrorKind.TooManyFlags);
+  assertEquals(error.errorAt.line, 2);
+  assertEquals(error.errorAt.column, 24);
+});
+
+Deno.test("duplicated FLAGS command", () => {
+  const { sheet, errors: [error] } = parse(
+    `TRACK 20 AUDIO\nFLAGS 4CH\nFLAGS DCP\n`,
+  );
+  assertEquals(sheet, {
+    flags: {
+      digitalCopyPermitted: true,
+      // latter `FLAGS` command will override former `FLAGS` command
+      fourChannelAudio: false,
+      preEmphasisEnabled: false,
+      scms: false,
+    },
+    tracks: [
+      { dataType: TrackDataType.AUDIO, indexes: [], trackNumber: 20 },
+    ],
+    comments: [],
+  });
+  assertEquals(error.kind, ErrorKind.DuplicatedFlagsCommand);
+  assertEquals(error.errorAt.line, 3);
+  assertEquals(error.errorAt.column, 1);
+});
+
+Deno.test("FLAGS command without arguments", () => {
+  const { sheet, errors: [error] } = parse(
+    `TRACK 20 AUDIO\nFLAGS\n`,
+  );
+  assertEquals(sheet, {
+    flags: {
+      digitalCopyPermitted: false,
+      fourChannelAudio: false,
+      preEmphasisEnabled: false,
+      scms: false,
+    },
+    tracks: [
+      { dataType: TrackDataType.AUDIO, indexes: [], trackNumber: 20 },
+    ],
+    comments: [],
+  });
+  assertEquals(error.kind, ErrorKind.NoFlags);
+  assertEquals(error.errorAt.line, 2);
+  assertEquals(error.errorAt.column, 6);
+});
+
+Deno.test("FLAGS command must come after TRACK command", () => {
+  const { sheet, errors: [error] } = parse(
+    `FLAGS PRE\n`,
+  );
+  assertEquals(sheet, {
+    flags: {
+      digitalCopyPermitted: false,
+      fourChannelAudio: false,
+      preEmphasisEnabled: true,
+      scms: false,
+    },
+    tracks: [],
+    comments: [],
+  });
+  assertEquals(error.kind, ErrorKind.InvalidFlagsCommandLocation);
+  assertEquals(error.errorAt.line, 1);
+  assertEquals(error.errorAt.column, 1);
+});
+
+Deno.test("FLAGS command must come before INDEX command", () => {
+  const { sheet, errors: [error] } = parse(
+    `TRACK 20 AUDIO\nINDEX 01 00:00:00\nFLAGS PRE\n`,
+  );
+  assertEquals(sheet, {
+    flags: {
+      digitalCopyPermitted: false,
+      fourChannelAudio: false,
+      preEmphasisEnabled: true,
+      scms: false,
+    },
+    tracks: [{
+      dataType: TrackDataType.AUDIO,
+      indexes: [{ number: 1, startingTime: [0, 0, 0] }],
+      trackNumber: 20,
+    }],
+    comments: [],
+  });
+  assertEquals(error.kind, ErrorKind.InvalidFlagsCommandLocation);
+  assertEquals(error.errorAt.line, 3);
+  assertEquals(error.errorAt.column, 1);
+});
+
+Deno.test("FLAGS command arguments can't be quoted", () => {
+  const { sheet, errors: [error] } = parse(
+    `TRACK 20 AUDIO\nFLAGS "PRE"\n`,
+  );
+  assertEquals(sheet, {
+    flags: {
+      digitalCopyPermitted: false,
+      fourChannelAudio: false,
+      preEmphasisEnabled: false,
+      scms: false,
+    },
+    tracks: [
+      { dataType: TrackDataType.AUDIO, indexes: [], trackNumber: 20 },
+    ],
+    comments: [],
+  });
+  assertEquals(error.kind, ErrorKind.NoFlags);
+  assertEquals(error.errorAt.line, 2);
+  assertEquals(error.errorAt.column, 12);
 });

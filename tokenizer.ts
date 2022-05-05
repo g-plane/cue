@@ -204,9 +204,9 @@ export function tokenize(
     eatString(kind?: TokenKind.Quoted | TokenKind.Unquoted) {
       const token = currentToken;
       if (
-        token.kind === kind ||
-        token.kind === TokenKind.Quoted ||
-        token.kind === TokenKind.Unquoted
+        (kind && token.kind === kind) ||
+        (!kind && (token.kind === TokenKind.Quoted ||
+          token.kind === TokenKind.Unquoted))
       ) {
         currentToken = next();
         return token;
