@@ -627,3 +627,127 @@ describe("INDEX command", () => {
     assertEquals(error.position.column, 10);
   });
 });
+
+describe("ISRC command", () => {
+  it("parse valid ISRC command", () => {
+    assertEquals(parse("TRACK 1 AUDIO\nISRC abxyz1234567"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType.AUDIO,
+          indexes: [],
+          isrc: "abxyz1234567",
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TRACK 1 AUDIO\nISRC ABXYZ1234567"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType.AUDIO,
+          indexes: [],
+          isrc: "ABXYZ1234567",
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TRACK 1 AUDIO\nISRC 012341234567"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType.AUDIO,
+          indexes: [],
+          isrc: "012341234567",
+        }],
+      },
+      errors: [],
+    });
+  });
+
+  it("too short ISRC", () => {
+    const { sheet, errors: [error] } = parse("TRACK 1 AUDIO\nISRC abc");
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [{
+        trackNumber: 1,
+        dataType: TrackDataType.AUDIO,
+        indexes: [],
+        isrc: "abc",
+      }],
+    });
+    assertEquals(error.kind, ErrorKind.InvalidISRCFormat);
+    assertEquals(error.position.line, 2);
+    assertEquals(error.position.column, 6);
+  });
+
+  it("too short ISRC", () => {
+    const { sheet, errors: [error] } = parse(
+      "TRACK 1 AUDIO\nISRC abcde012345678",
+    );
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [{
+        trackNumber: 1,
+        dataType: TrackDataType.AUDIO,
+        indexes: [],
+        isrc: "abcde012345678",
+      }],
+    });
+    assertEquals(error.kind, ErrorKind.InvalidISRCFormat);
+    assertEquals(error.position.line, 2);
+    assertEquals(error.position.column, 6);
+  });
+
+  it("invalid ISRC format", () => {
+    const { sheet, errors: [error] } = parse(
+      "TRACK 1 AUDIO\nISRC abcdef1234567",
+    );
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [{
+        trackNumber: 1,
+        dataType: TrackDataType.AUDIO,
+        indexes: [],
+        isrc: "abcdef1234567",
+      }],
+    });
+    assertEquals(error.kind, ErrorKind.InvalidISRCFormat);
+    assertEquals(error.position.line, 2);
+    assertEquals(error.position.column, 6);
+  });
+
+  it("ISRC command must come after TRACK command", () => {
+    const { sheet, errors: [error] } = parse("ISRC ABXYZ1234567");
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [],
+    });
+    assertEquals(error.kind, ErrorKind.InvalidISRCCommandLocation);
+    assertEquals(error.position.line, 1);
+    assertEquals(error.position.column, 1);
+  });
+
+  it("ISRC command must come before INDEX command", () => {
+    const { sheet, errors: [error] } = parse(
+      "TRACK 1 AUDIO\nINDEX 00 00:00:00\nISRC ABXYZ1234567",
+    );
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [{
+        trackNumber: 1,
+        dataType: TrackDataType.AUDIO,
+        indexes: [{ number: 0, startingTime: [0, 0, 0] }],
+        isrc: "ABXYZ1234567",
+      }],
+    });
+    assertEquals(error.kind, ErrorKind.InvalidISRCCommandLocation);
+    assertEquals(error.position.line, 3);
+    assertEquals(error.position.column, 1);
+  });
+});
