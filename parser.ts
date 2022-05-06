@@ -417,11 +417,17 @@ function parsePostGap(tokens: TokenStream, context: Context): void {
   const token = tokens.expectString(TokenKind.Unquoted);
   const matches = RE_TIME.exec(token.value);
   if (matches) {
-    context.state.currentTrack.postGap = [
+    const postGap: Track["postGap"] = [
       Number.parseInt(matches[1]),
       Number.parseInt(matches[2]),
       Number.parseInt(matches[3]),
     ];
+
+    if (postGap[2] > 74) {
+      context.raise(ErrorKind.FramesTooLarge, token);
+    }
+
+    context.state.currentTrack.postGap = postGap;
   } else {
     context.raise(ErrorKind.InvalidTimeFormat, token);
   }

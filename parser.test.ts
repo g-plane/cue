@@ -821,3 +821,98 @@ describe("PERFORMER command", () => {
     assertEquals(error.position.column, 11);
   });
 });
+
+describe("POSTGAP command", () => {
+  it("parse valid POSTGAP command", () => {
+    assertEquals(parse("TRACK 1 AUDIO\nINDEX 00 00:00:00\nPOSTGAP 00:02:00"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType.AUDIO,
+          indexes: [{ number: 0, startingTime: [0, 0, 0] }],
+          postGap: [0, 2, 0],
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TRACK 1 AUDIO\nINDEX 00 00:00:00\nPOSTGAP 123:45:56"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType.AUDIO,
+          indexes: [{ number: 0, startingTime: [0, 0, 0] }],
+          postGap: [123, 45, 56],
+        }],
+      },
+      errors: [],
+    });
+  });
+
+  it("duplicated POSTGAP command", () => {
+    const { sheet, errors: [error] } = parse(
+      "TRACK 1 AUDIO\nINDEX 00 00:00:00\nPOSTGAP 00:00:00\nPOSTGAP 00:01:00",
+    );
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [{
+        trackNumber: 1,
+        dataType: TrackDataType.AUDIO,
+        indexes: [{ number: 0, startingTime: [0, 0, 0] }],
+        postGap: [0, 1, 0],
+      }],
+    });
+    assertEquals(error.kind, ErrorKind.DuplicatedPostGapCommand);
+    assertEquals(error.position.line, 4);
+    assertEquals(error.position.column, 1);
+  });
+
+  it("POSTGAP command must come after INDEX command", () => {
+    const { sheet, errors: [error] } = parse(
+      "TRACK 1 AUDIO\nPOSTGAP 00:00:00\nINDEX 00 00:00:00",
+    );
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [{
+        trackNumber: 1,
+        dataType: TrackDataType.AUDIO,
+        indexes: [{ number: 0, startingTime: [0, 0, 0] }],
+        postGap: [0, 0, 0],
+      }],
+    });
+    assertEquals(error.kind, ErrorKind.InvalidPostGapCommandLocation);
+    assertEquals(error.position.line, 2);
+    assertEquals(error.position.column, 1);
+  });
+
+  it("missing current track", () => {
+    const { sheet, errors: [error] } = parse("POSTGAP 00:00:00\n");
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [],
+    });
+    assertEquals(error.kind, ErrorKind.CurrentTrackRequired);
+    assertEquals(error.position.line, 1);
+    assertEquals(error.position.column, 1);
+  });
+
+  it("frame too large", () => {
+    const { sheet, errors: [error] } = parse(
+      "TRACK 1 AUDIO\nINDEX 00 00:00:00\nPOSTGAP 00:02:75",
+    );
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [{
+        trackNumber: 1,
+        dataType: TrackDataType.AUDIO,
+        indexes: [{ number: 0, startingTime: [0, 0, 0] }],
+        postGap: [0, 2, 75],
+      }],
+    });
+    assertEquals(error.kind, ErrorKind.FramesTooLarge);
+    assertEquals(error.position.line, 3);
+    assertEquals(error.position.column, 9);
+  });
+});
