@@ -751,3 +751,73 @@ describe("ISRC command", () => {
     assertEquals(error.position.column, 1);
   });
 });
+
+describe("PERFORMER command", () => {
+  it("parse valid PERFORMER command", () => {
+    assertEquals(parse("PERFORMER abc"), {
+      sheet: {
+        comments: [],
+        tracks: [],
+        performer: "abc",
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TRACK 1 AUDIO\nPERFORMER abc"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType.AUDIO,
+          indexes: [],
+          performer: "abc",
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse(`PERFORMER "abc def"`), {
+      sheet: {
+        comments: [],
+        tracks: [],
+        performer: "abc def",
+      },
+      errors: [],
+    });
+
+    assertEquals(parse(`TRACK 1 AUDIO\nPERFORMER "abc def"`), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType.AUDIO,
+          indexes: [],
+          performer: "abc def",
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("PERFORMER 🍥🫕"), {
+      sheet: {
+        comments: [],
+        tracks: [],
+        performer: "🍥🫕",
+      },
+      errors: [],
+    });
+  });
+
+  it("performer too long", () => {
+    const performer = "x".repeat(81);
+    const { sheet, errors: [error] } = parse(`PERFORMER ${performer}`);
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [],
+      performer,
+    });
+    assertEquals(error.kind, ErrorKind.TooLongPerformer);
+    assertEquals(error.position.line, 1);
+    assertEquals(error.position.column, 11);
+  });
+});

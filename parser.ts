@@ -385,6 +385,10 @@ function parsePerformer(tokens: TokenStream, context: Context): void {
     return;
   }
 
+  if (token.value.length > 80) {
+    context.raise(ErrorKind.TooLongPerformer, token);
+  }
+
   if (context.state.currentTrack) {
     context.state.currentTrack.performer = token.value;
   } else {

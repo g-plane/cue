@@ -24,6 +24,7 @@ export enum ErrorKind {
   InvalidFirstIndexTime,
   InvalidISRCCommandLocation,
   InvalidISRCFormat,
+  TooLongPerformer,
   CurrentTrackRequired,
   InvalidPostGapCommandLocation,
   DuplicatedPostGapCommand,
@@ -84,6 +85,8 @@ export function translateErrorMessage(kind: ErrorKind): string {
       return "'ISRC' command must be specified after a 'TRACK' command, but before any 'INDEX' commands.";
     case ErrorKind.InvalidISRCFormat:
       return "Invalid ISRC format.";
+    case ErrorKind.TooLongPerformer:
+      return "Performer must have 1 to 80 characters.";
     case ErrorKind.CurrentTrackRequired:
       return "This command must be under a specific track.";
     case ErrorKind.InvalidPostGapCommandLocation:
