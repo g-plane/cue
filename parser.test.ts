@@ -1011,3 +1011,31 @@ describe("PREGAP command", () => {
     assertEquals(error.position.column, 8);
   });
 });
+
+describe("REM command", () => {
+  it("parse comments", () => {
+    assertEquals(parse("REM\nREM"), {
+      sheet: {
+        comments: ["", ""],
+        tracks: [],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("REM a b cd"), {
+      sheet: {
+        comments: ["a b cd"],
+        tracks: [],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse(`REM "a b c d"`), {
+      sheet: {
+        comments: ["a b c d"],
+        tracks: [],
+      },
+      errors: [],
+    });
+  });
+});
