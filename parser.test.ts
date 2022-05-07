@@ -1179,3 +1179,207 @@ describe("TITLE command", () => {
     assertEquals(error.position.column, 7);
   });
 });
+
+describe("TRACK command", () => {
+  it("parse valid TRACK command", () => {
+    assertEquals(parse("TRACK 1 AUDIO"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType.AUDIO,
+          indexes: [],
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TRACK 1 audio"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType.AUDIO,
+          indexes: [],
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TRACK 99 CDG"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 99,
+          dataType: TrackDataType.CDG,
+          indexes: [],
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TRACK 99 Cdg"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 99,
+          dataType: TrackDataType.CDG,
+          indexes: [],
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TRACK 12 MODE1/2048"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 12,
+          dataType: TrackDataType["MODE1/2048"],
+          indexes: [],
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TRACK 1 MODE1/2352"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType["MODE1/2352"],
+          indexes: [],
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TRACK 1 MODE2/2336"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType["MODE2/2336"],
+          indexes: [],
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TRACK 1 MODE2/2352"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType["MODE2/2352"],
+          indexes: [],
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TRACK 1 CDI/2336"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType["CDI/2336"],
+          indexes: [],
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TRACK 1 CDI/2352"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType["CDI/2352"],
+          indexes: [],
+        }],
+      },
+      errors: [],
+    });
+  });
+
+  it("multiple tracks", () => {
+    assertEquals(
+      parse(`
+TRACK 1 AUDIO
+  PERFORMER pa
+  TITLE ta
+TRACK 2 CDG
+  PERFORMER pb
+  TITLE tb
+    `),
+      {
+        sheet: {
+          comments: [],
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType.AUDIO,
+              indexes: [],
+              performer: "pa",
+              title: "ta",
+            },
+            {
+              trackNumber: 2,
+              dataType: TrackDataType.CDG,
+              indexes: [],
+              performer: "pb",
+              title: "tb",
+            },
+          ],
+        },
+        errors: [],
+      },
+    );
+  });
+
+  it("unknown track data type", () => {
+    const { sheet, errors: [error] } = parse("TRACK 1 XYZ");
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [{
+        trackNumber: 1,
+        dataType: TrackDataType.Unknown,
+        indexes: [],
+      }],
+    });
+    assertEquals(error.kind, ErrorKind.UnknownTrackDataType);
+    assertEquals(error.position.line, 1);
+    assertEquals(error.position.column, 9);
+  });
+
+  it("track number lower than 1", () => {
+    const { sheet, errors: [error] } = parse("TRACK 0 AUDIO");
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [{
+        trackNumber: 0,
+        dataType: TrackDataType.AUDIO,
+        indexes: [],
+      }],
+    });
+    assertEquals(error.kind, ErrorKind.InvalidTrackNumberRange);
+    assertEquals(error.position.line, 1);
+    assertEquals(error.position.column, 7);
+  });
+
+  it("track number higher than 99", () => {
+    const { sheet, errors: [error] } = parse("TRACK 100 AUDIO");
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [{
+        trackNumber: 100,
+        dataType: TrackDataType.AUDIO,
+        indexes: [],
+      }],
+    });
+    assertEquals(error.kind, ErrorKind.InvalidTrackNumberRange);
+    assertEquals(error.position.line, 1);
+    assertEquals(error.position.column, 7);
+  });
+});
