@@ -30,6 +30,7 @@ export enum ErrorKind {
   DuplicatedPostGapCommand,
   InvalidPreGapCommandLocation,
   DuplicatedPreGapCommand,
+  TooLongSongWriter,
   InvalidTrackNumberRange,
   UnknownTrackDataType,
   UnknownFlag,
@@ -97,6 +98,8 @@ export function translateErrorMessage(kind: ErrorKind): string {
       return "'PREGAP' command must appear before any 'INDEX' commands.";
     case ErrorKind.DuplicatedPreGapCommand:
       return "Only one 'PREGAP' command is allowed per track.";
+    case ErrorKind.TooLongSongWriter:
+      return "Song writer must have 1 to 80 characters.";
     case ErrorKind.InvalidTrackNumberRange:
       return "Track number range must be from 1 to 99.";
     case ErrorKind.UnknownTrackDataType:

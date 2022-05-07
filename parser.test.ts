@@ -1039,3 +1039,73 @@ describe("REM command", () => {
     });
   });
 });
+
+describe("SONGWRITER command", () => {
+  it("parse valid SONGWRITER command", () => {
+    assertEquals(parse("SONGWRITER abc"), {
+      sheet: {
+        comments: [],
+        tracks: [],
+        songWriter: "abc",
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TRACK 1 AUDIO\nSONGWRITER abc"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType.AUDIO,
+          indexes: [],
+          songWriter: "abc",
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse(`SONGWRITER "abc def"`), {
+      sheet: {
+        comments: [],
+        tracks: [],
+        songWriter: "abc def",
+      },
+      errors: [],
+    });
+
+    assertEquals(parse(`TRACK 1 AUDIO\nSONGWRITER "abc def"`), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType.AUDIO,
+          indexes: [],
+          songWriter: "abc def",
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("SONGWRITER 🍥🫕"), {
+      sheet: {
+        comments: [],
+        tracks: [],
+        songWriter: "🍥🫕",
+      },
+      errors: [],
+    });
+  });
+
+  it("song writer too long", () => {
+    const songWriter = "x".repeat(81);
+    const { sheet, errors: [error] } = parse(`SONGWRITER ${songWriter}`);
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [],
+      songWriter,
+    });
+    assertEquals(error.kind, ErrorKind.TooLongSongWriter);
+    assertEquals(error.position.line, 1);
+    assertEquals(error.position.column, 12);
+  });
+});

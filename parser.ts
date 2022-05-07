@@ -488,10 +488,15 @@ function parseSongWriter(tokens: TokenStream, context: Context): void {
     return;
   }
 
+  const songWriter = token.value;
+  if (songWriter.length > 80) {
+    context.raise(ErrorKind.TooLongSongWriter, token);
+  }
+
   if (context.state.currentTrack) {
-    context.state.currentTrack.songWriter = token.value;
+    context.state.currentTrack.songWriter = songWriter;
   } else {
-    context.sheet.songWriter = token.value;
+    context.sheet.songWriter = songWriter;
   }
 }
 
