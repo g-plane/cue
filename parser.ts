@@ -507,10 +507,15 @@ function parseTitle(tokens: TokenStream, context: Context): void {
     return;
   }
 
+  const title = token.value;
+  if (title.length > 80) {
+    context.raise(ErrorKind.TooLongTitle, token);
+  }
+
   if (context.state.currentTrack) {
-    context.state.currentTrack.title = token.value;
+    context.state.currentTrack.title = title;
   } else {
-    context.sheet.title = token.value;
+    context.sheet.title = title;
   }
 }
 

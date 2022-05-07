@@ -31,6 +31,7 @@ export enum ErrorKind {
   InvalidPreGapCommandLocation,
   DuplicatedPreGapCommand,
   TooLongSongWriter,
+  TooLongTitle,
   InvalidTrackNumberRange,
   UnknownTrackDataType,
   UnknownFlag,
@@ -100,6 +101,8 @@ export function translateErrorMessage(kind: ErrorKind): string {
       return "Only one 'PREGAP' command is allowed per track.";
     case ErrorKind.TooLongSongWriter:
       return "Song writer must have 1 to 80 characters.";
+    case ErrorKind.TooLongTitle:
+      return "Title must have 1 to 80 characters.";
     case ErrorKind.InvalidTrackNumberRange:
       return "Track number range must be from 1 to 99.";
     case ErrorKind.UnknownTrackDataType:

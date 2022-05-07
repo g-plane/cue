@@ -1109,3 +1109,73 @@ describe("SONGWRITER command", () => {
     assertEquals(error.position.column, 12);
   });
 });
+
+describe("TITLE command", () => {
+  it("parse valid TITLE command", () => {
+    assertEquals(parse("TITLE abc"), {
+      sheet: {
+        comments: [],
+        tracks: [],
+        title: "abc",
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TRACK 1 AUDIO\nTITLE abc"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType.AUDIO,
+          indexes: [],
+          title: "abc",
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse(`TITLE "abc def"`), {
+      sheet: {
+        comments: [],
+        tracks: [],
+        title: "abc def",
+      },
+      errors: [],
+    });
+
+    assertEquals(parse(`TRACK 1 AUDIO\nTITLE "abc def"`), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType.AUDIO,
+          indexes: [],
+          title: "abc def",
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TITLE 🍥🫕"), {
+      sheet: {
+        comments: [],
+        tracks: [],
+        title: "🍥🫕",
+      },
+      errors: [],
+    });
+  });
+
+  it("song writer too long", () => {
+    const title = "x".repeat(81);
+    const { sheet, errors: [error] } = parse(`TITLE ${title}`);
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [],
+      title,
+    });
+    assertEquals(error.kind, ErrorKind.TooLongTitle);
+    assertEquals(error.position.line, 1);
+    assertEquals(error.position.column, 7);
+  });
+});
