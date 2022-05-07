@@ -454,11 +454,17 @@ function parsePreGap(tokens: TokenStream, context: Context): void {
   const token = tokens.expectString(TokenKind.Unquoted);
   const matches = RE_TIME.exec(token.value);
   if (matches) {
-    context.state.currentTrack.preGap = [
+    const preGap: Track["preGap"] = [
       Number.parseInt(matches[1]),
       Number.parseInt(matches[2]),
       Number.parseInt(matches[3]),
     ];
+
+    if (preGap[2] > 74) {
+      context.raise(ErrorKind.FramesTooLarge, token);
+    }
+
+    context.state.currentTrack.preGap = preGap;
   } else {
     context.raise(ErrorKind.InvalidTimeFormat, token);
   }

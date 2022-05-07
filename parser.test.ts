@@ -916,3 +916,98 @@ describe("POSTGAP command", () => {
     assertEquals(error.position.column, 9);
   });
 });
+
+describe("PREGAP command", () => {
+  it("parse valid PREGAP command", () => {
+    assertEquals(parse("TRACK 1 AUDIO\nPREGAP 00:02:00\nINDEX 00 00:00:00"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType.AUDIO,
+          indexes: [{ number: 0, startingTime: [0, 0, 0] }],
+          preGap: [0, 2, 0],
+        }],
+      },
+      errors: [],
+    });
+
+    assertEquals(parse("TRACK 1 AUDIO\nPREGAP 123:45:56\nINDEX 00 00:00:00"), {
+      sheet: {
+        comments: [],
+        tracks: [{
+          trackNumber: 1,
+          dataType: TrackDataType.AUDIO,
+          indexes: [{ number: 0, startingTime: [0, 0, 0] }],
+          preGap: [123, 45, 56],
+        }],
+      },
+      errors: [],
+    });
+  });
+
+  it("duplicated PREGAP command", () => {
+    const { sheet, errors: [error] } = parse(
+      "TRACK 1 AUDIO\nPREGAP 00:00:00\nPREGAP 00:01:00\nINDEX 00 00:00:00",
+    );
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [{
+        trackNumber: 1,
+        dataType: TrackDataType.AUDIO,
+        indexes: [{ number: 0, startingTime: [0, 0, 0] }],
+        preGap: [0, 1, 0],
+      }],
+    });
+    assertEquals(error.kind, ErrorKind.DuplicatedPreGapCommand);
+    assertEquals(error.position.line, 3);
+    assertEquals(error.position.column, 1);
+  });
+
+  it("POSTGAP command must come before INDEX command", () => {
+    const { sheet, errors: [error] } = parse(
+      "TRACK 1 AUDIO\nINDEX 00 00:00:00\nPREGAP 00:00:00",
+    );
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [{
+        trackNumber: 1,
+        dataType: TrackDataType.AUDIO,
+        indexes: [{ number: 0, startingTime: [0, 0, 0] }],
+        preGap: [0, 0, 0],
+      }],
+    });
+    assertEquals(error.kind, ErrorKind.InvalidPreGapCommandLocation);
+    assertEquals(error.position.line, 3);
+    assertEquals(error.position.column, 1);
+  });
+
+  it("missing current track", () => {
+    const { sheet, errors: [error] } = parse("PREGAP 00:00:00\n");
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [],
+    });
+    assertEquals(error.kind, ErrorKind.CurrentTrackRequired);
+    assertEquals(error.position.line, 1);
+    assertEquals(error.position.column, 1);
+  });
+
+  it("frame too large", () => {
+    const { sheet, errors: [error] } = parse(
+      "TRACK 1 AUDIO\nPREGAP 00:02:75\nINDEX 00 00:00:00",
+    );
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [{
+        trackNumber: 1,
+        dataType: TrackDataType.AUDIO,
+        indexes: [{ number: 0, startingTime: [0, 0, 0] }],
+        preGap: [0, 2, 75],
+      }],
+    });
+    assertEquals(error.kind, ErrorKind.FramesTooLarge);
+    assertEquals(error.position.line, 2);
+    assertEquals(error.position.column, 8);
+  });
+});
