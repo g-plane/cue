@@ -1383,6 +1383,28 @@ TRACK 2 CDG
     assertEquals(error.position.column, 7);
   });
 
+  it("track number must be sequential", () => {
+    const { sheet, errors: [error] } = parse("TRACK 2 AUDIO\nTRACK 4 AUDIO");
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [
+        {
+          trackNumber: 2,
+          dataType: TrackDataType.AUDIO,
+          indexes: [],
+        },
+        {
+          trackNumber: 4,
+          dataType: TrackDataType.AUDIO,
+          indexes: [],
+        },
+      ],
+    });
+    assertEquals(error.kind, ErrorKind.InvalidTrackNumberSequence);
+    assertEquals(error.position.line, 2);
+    assertEquals(error.position.column, 7);
+  });
+
   it("check at least one track", () => {
     const { sheet, errors: [error] } = parse("", {
       checkAtLeastOneTrack: true,

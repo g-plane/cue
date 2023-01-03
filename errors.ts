@@ -33,6 +33,7 @@ export enum ErrorKind {
   TooLongSongWriter,
   TooLongTitle,
   InvalidTrackNumberRange,
+  InvalidTrackNumberSequence,
   UnknownTrackDataType,
   TracksRequired,
   UnknownFlag,
@@ -106,6 +107,8 @@ export function translateErrorMessage(kind: ErrorKind): string {
       return "Title must have 1 to 80 characters.";
     case ErrorKind.InvalidTrackNumberRange:
       return "Track number range must be from 1 to 99.";
+    case ErrorKind.InvalidTrackNumberSequence:
+      return "Track number must be sequential after previous tracks.";
     case ErrorKind.UnknownTrackDataType:
       return "Unknown track data type.";
     case ErrorKind.TracksRequired:

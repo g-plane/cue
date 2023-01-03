@@ -541,6 +541,11 @@ function parseTrack(tokens: TokenStream, context: Context): void {
     context.raise(ErrorKind.InvalidTrackNumberRange, trackNumberToken);
   }
 
+  const previousTrack = context.sheet.tracks.at(-1);
+  if (previousTrack && previousTrack.trackNumber !== trackNumber - 1) {
+    context.raise(ErrorKind.InvalidTrackNumberSequence, trackNumberToken);
+  }
+
   const dataTypeToken = tokens.expectString(TokenKind.Unquoted);
   const dataType = (() => {
     switch (dataTypeToken.value.toUpperCase()) {
