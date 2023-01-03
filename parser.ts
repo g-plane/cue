@@ -50,6 +50,7 @@ interface Context {
 
 interface ParserOptions {
   fatal?: boolean;
+  checkAtLeastOneTrack?: boolean;
 }
 
 export function parse(source: string, options: ParserOptions = {}) {
@@ -88,6 +89,10 @@ export function parse(source: string, options: ParserOptions = {}) {
 
   if (context.state.currentTrack) {
     context.sheet.tracks.push(context.state.currentTrack);
+  }
+
+  if (options.checkAtLeastOneTrack && context.sheet.tracks.length === 0) {
+    context.raise(ErrorKind.TracksRequired, tokens.getCurrentLocation());
   }
 
   return { sheet: context.sheet, errors };

@@ -1382,4 +1382,17 @@ TRACK 2 CDG
     assertEquals(error.position.line, 1);
     assertEquals(error.position.column, 7);
   });
+
+  it("check at least one track", () => {
+    const { sheet, errors: [error] } = parse("", {
+      checkAtLeastOneTrack: true,
+    });
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [],
+    });
+    assertEquals(error.kind, ErrorKind.TracksRequired);
+    assertEquals(error.position.line, 1);
+    assertEquals(error.position.column, 1);
+  });
 });

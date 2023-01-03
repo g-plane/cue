@@ -34,6 +34,7 @@ export enum ErrorKind {
   TooLongTitle,
   InvalidTrackNumberRange,
   UnknownTrackDataType,
+  TracksRequired,
   UnknownFlag,
 }
 
@@ -107,6 +108,8 @@ export function translateErrorMessage(kind: ErrorKind): string {
       return "Track number range must be from 1 to 99.";
     case ErrorKind.UnknownTrackDataType:
       return "Unknown track data type.";
+    case ErrorKind.TracksRequired:
+      return "At least one track is required.";
   }
 }
 
