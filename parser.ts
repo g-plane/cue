@@ -531,8 +531,9 @@ function parseTrack(tokens: TokenStream, context: Context): void {
   state.parsedCommand &= ~ParsedCommand.POSTGAP;
   state.parsedCommand &= ~ParsedCommand.ISRC;
 
-  if (context.state.currentTrack) {
-    context.sheet.tracks.push(context.state.currentTrack);
+  const previousTrack = state.currentTrack;
+  if (previousTrack) {
+    context.sheet.tracks.push(previousTrack);
   }
 
   const trackNumberToken = tokens.expectString(TokenKind.Unquoted);
@@ -541,7 +542,6 @@ function parseTrack(tokens: TokenStream, context: Context): void {
     context.raise(ErrorKind.InvalidTrackNumberRange, trackNumberToken);
   }
 
-  const previousTrack = context.sheet.tracks.at(-1);
   if (previousTrack && previousTrack.trackNumber !== trackNumber - 1) {
     context.raise(ErrorKind.InvalidTrackNumberSequence, trackNumberToken);
   }
