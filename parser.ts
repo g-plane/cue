@@ -145,10 +145,7 @@ function parseCommand(
       return;
   }
 
-  const commandEnumValue: number | undefined = Reflect.get(
-    ParsedCommand,
-    command,
-  );
+  const commandEnumValue = ParsedCommand[command];
   if (commandEnumValue) {
     context.state.parsedCommand |= commandEnumValue;
   }
