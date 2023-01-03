@@ -123,14 +123,14 @@ function parseCommand(
     case "PERFORMER":
       parsePerformer(tokens, context);
       break;
-    case "REM":
-      parseRem(tokens, context);
-      break;
     case "POSTGAP":
       parsePostGap(tokens, context);
       break;
     case "PREGAP":
       parsePreGap(tokens, context);
+      break;
+    case "REM":
+      parseRem(tokens, context);
       break;
     case "SONGWRITER":
       parseSongWriter(tokens, context);
