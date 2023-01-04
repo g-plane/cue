@@ -512,6 +512,36 @@ describe("INDEX command", () => {
         errors: [],
       },
     );
+
+    assertEquals(
+      parse(`
+      TRACK 1 AUDIO
+        INDEX 00 00:00:00
+      TRACK 2 AUDIO
+        INDEX 01 123:45:56`),
+      {
+        sheet: {
+          comments: [],
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType.AUDIO,
+              indexes: [
+                { number: 0, startingTime: [0, 0, 0] },
+              ],
+            },
+            {
+              trackNumber: 2,
+              dataType: TrackDataType.AUDIO,
+              indexes: [
+                { number: 1, startingTime: [123, 45, 56] },
+              ],
+            },
+          ],
+        },
+        errors: [],
+      },
+    );
   });
 
   it("first index must be 0 or 1", () => {

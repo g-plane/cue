@@ -84,7 +84,7 @@ export function translateErrorMessage(kind: ErrorKind): string {
     case ErrorKind.InvalidFirstIndexNumber:
       return "Number of first index must be 0 or 1.";
     case ErrorKind.InvalidFirstIndexTime:
-      return "First index of a track must start at 00:00:00.";
+      return "First index of a file must start at 00:00:00.";
     case ErrorKind.InvalidISRCCommandLocation:
       return "'ISRC' command must be specified after a 'TRACK' command, but before any 'INDEX' commands.";
     case ErrorKind.InvalidISRCFormat:

@@ -339,7 +339,8 @@ function parseIndex(tokens: TokenStream, context: Context): void {
       context.raise(ErrorKind.InvalidFirstIndexNumber, indexNumberToken);
     }
     if (
-      startingTime[0] !== 0 || startingTime[1] !== 0 || startingTime[2] !== 0
+      context.sheet.tracks.length === 0 /* current track is first track */ &&
+      (startingTime[0] !== 0 || startingTime[1] !== 0 || startingTime[2] !== 0)
     ) {
       context.raise(ErrorKind.InvalidFirstIndexTime, indexTimeToken);
     }
