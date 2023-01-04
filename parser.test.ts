@@ -158,6 +158,59 @@ describe("FILE command", () => {
       },
       errors: [],
     });
+
+    assertEquals(parse(`CATALOG 1234567890123\nFILE audio.wav WAVE`), {
+      sheet: {
+        catalog: "1234567890123",
+        file: { name: "audio.wav", type: FileType.Wave },
+        tracks: [],
+        comments: [],
+      },
+      errors: [],
+    });
+
+    assertEquals(
+      parse(`CDTEXTFILE C:\\a.cdt\nFILE audio.wav WAVE`),
+      {
+        sheet: {
+          CDTextFile: "C:\\a.cdt",
+          file: { name: "audio.wav", type: FileType.Wave },
+          tracks: [],
+          comments: [],
+        },
+        errors: [],
+      },
+    );
+
+    assertEquals(
+      parse(`
+      CATALOG 1234567890123
+      CDTEXTFILE C:\\a.cdt
+      FILE audio.wav WAVE`),
+      {
+        sheet: {
+          catalog: "1234567890123",
+          CDTextFile: "C:\\a.cdt",
+          file: { name: "audio.wav", type: FileType.Wave },
+          tracks: [],
+          comments: [],
+        },
+        errors: [],
+      },
+    );
+
+    assertEquals(
+      parse(`PERFORMER ""\nFILE audio.wav WAVE`),
+      {
+        sheet: {
+          performer: "",
+          file: { name: "audio.wav", type: FileType.Wave },
+          tracks: [],
+          comments: [],
+        },
+        errors: [],
+      },
+    );
   });
 
   it("missing file name argument", () => {
@@ -208,6 +261,22 @@ describe("FILE command", () => {
     assertEquals(error.kind, ErrorKind.ExpectLineBreak);
     assertEquals(error.position.line, 1);
     assertEquals(error.position.column, 20);
+  });
+
+  it("invalid command location", () => {
+    const { sheet, errors: [error] } = parse(
+      `PERFORMER ""\nFILE audio.wav WAVE`,
+      { strictFileCommandPosition: true },
+    );
+    assertEquals(sheet, {
+      performer: "",
+      file: { name: "audio.wav", type: FileType.Wave },
+      tracks: [],
+      comments: [],
+    });
+    assertEquals(error.kind, ErrorKind.InvalidFileCommandLocation);
+    assertEquals(error.position.line, 2);
+    assertEquals(error.position.column, 1);
   });
 });
 

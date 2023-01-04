@@ -39,6 +39,8 @@ interface Context {
 
   state: ParserState;
 
+  options: ParserOptions;
+
   /**
    * Raise a parsing error.
    */
@@ -51,6 +53,7 @@ interface Context {
 interface ParserOptions {
   fatal?: boolean;
   checkAtLeastOneTrack?: boolean;
+  strictFileCommandPosition?: boolean;
 }
 
 export function parse(source: string, options: ParserOptions = {}) {
@@ -76,6 +79,7 @@ export function parse(source: string, options: ParserOptions = {}) {
       parsedCommand: 0,
       commandToken: null!,
     },
+    options,
     raise,
   };
 
@@ -195,11 +199,12 @@ function parseFile(
   tokens: TokenStream,
   context: Context,
 ): void {
-  const { parsedCommand } = context.state;
+  const { state: { parsedCommand }, options } = context;
   if (
+    options.strictFileCommandPosition &&
     parsedCommand &&
-    !(parsedCommand & ParsedCommand.CATALOG) &&
-    !(parsedCommand & ParsedCommand.CDTEXTFILE)
+    !(parsedCommand & ParsedCommand.CATALOG ||
+      parsedCommand & ParsedCommand.CDTEXTFILE)
   ) {
     context.raise(
       ErrorKind.InvalidFileCommandLocation,
