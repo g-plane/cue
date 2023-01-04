@@ -18,6 +18,7 @@ export enum ErrorKind {
   NoFlags,
   TooManyFlags,
   InvalidIndexNumberRange,
+  InvalidIndexNumberSequence,
   InvalidTimeFormat,
   FramesTooLarge,
   InvalidFirstIndexNumber,
@@ -77,6 +78,8 @@ export function translateErrorMessage(kind: ErrorKind): string {
       return "Unknown flag. Only 'DCP', '4CH', 'PRE' and 'SCMS' are allowed.";
     case ErrorKind.InvalidIndexNumberRange:
       return "Index number must be a number between 0 and 99. (inclusive)";
+    case ErrorKind.InvalidIndexNumberSequence:
+      return "Index number must be sequential after previous indexes.";
     case ErrorKind.InvalidTimeFormat:
       return "Time format must be 'mm:ss:ff'.";
     case ErrorKind.FramesTooLarge:

@@ -321,6 +321,11 @@ function parseIndex(tokens: TokenStream, context: Context): void {
     context.raise(ErrorKind.InvalidIndexNumberRange, indexNumberToken);
   }
 
+  const previousIndex = context.state.currentTrack.indexes.at(-1);
+  if (previousIndex && previousIndex.number !== number - 1) {
+    context.raise(ErrorKind.InvalidIndexNumberSequence, indexNumberToken);
+  }
+
   const indexTimeToken = tokens.expectString(TokenKind.Unquoted);
   const matches = RE_TIME.exec(indexTimeToken.value);
   if (!matches) {

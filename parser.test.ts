@@ -647,7 +647,7 @@ describe("INDEX command", () => {
     assertEquals(error.position.column, 10);
   });
 
-  it("invalid index number", () => {
+  it("invalid index number range", () => {
     const { sheet, errors: [error] } = parse(
       "TRACK 1 AUDIO\nINDEX 00 00:00:00\nINDEX a 00:02:00",
     );
@@ -663,6 +663,28 @@ describe("INDEX command", () => {
       }],
     });
     assertEquals(error.kind, ErrorKind.InvalidIndexNumberRange);
+    assertEquals(error.position.line, 3);
+    assertEquals(error.position.column, 7);
+  });
+
+  it("index number must be sequential", () => {
+    const { sheet, errors: [error] } = parse(
+      "TRACK 1 AUDIO\nINDEX 00 00:00:00\nINDEX 02 00:02:00",
+    );
+    assertEquals(sheet, {
+      comments: [],
+      tracks: [
+        {
+          trackNumber: 1,
+          dataType: TrackDataType.AUDIO,
+          indexes: [
+            { number: 0, startingTime: [0, 0, 0] },
+            { number: 2, startingTime: [0, 2, 0] },
+          ],
+        },
+      ],
+    });
+    assertEquals(error.kind, ErrorKind.InvalidIndexNumberSequence);
     assertEquals(error.position.line, 3);
     assertEquals(error.position.column, 7);
   });
