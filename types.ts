@@ -57,6 +57,7 @@ export interface Track {
 }
 
 export enum TrackDataType {
+  /** @internal */
   Unknown,
   "AUDIO",
   "CDG",
