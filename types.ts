@@ -7,18 +7,18 @@ export interface Position {
 export interface CueSheeet {
   catalog?: string;
   CDTextFile?: string;
-  file?: File;
   flags?: Flags;
   title?: string;
   performer?: string;
   songWriter?: string;
-  tracks: Track[];
+  files: File[];
   comments: string[];
 }
 
 export interface File {
   name: string;
   type: FileType;
+  tracks: Track[];
 }
 
 export enum FileType {

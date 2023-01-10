@@ -71,7 +71,7 @@ export function parse(source: string, options: ParserOptions = {}) {
 
   const context: Context = {
     sheet: {
-      tracks: [],
+      files: [],
       comments: [],
     },
     state: {
@@ -92,10 +92,13 @@ export function parse(source: string, options: ParserOptions = {}) {
   }
 
   if (context.state.currentTrack) {
-    context.sheet.tracks.push(context.state.currentTrack);
+    context.sheet.files.at(-1)?.tracks.push(context.state.currentTrack);
   }
 
-  if (options.checkAtLeastOneTrack && context.sheet.tracks.length === 0) {
+  if (
+    options.checkAtLeastOneTrack &&
+    context.sheet.files.flatMap(({ tracks }) => tracks).length === 0
+  ) {
     context.raise(ErrorKind.TracksRequired, tokens.getCurrentLocation());
   }
 
@@ -239,7 +242,11 @@ function parseFile(
     context.raise(ErrorKind.UnknownFileType, fileTypeToken);
   }
 
-  context.sheet.file = { name: fileNameToken.value, type: fileType };
+  context.sheet.files.push({
+    name: fileNameToken.value,
+    type: fileType,
+    tracks: [],
+  });
 }
 
 function parseFlags(
@@ -349,7 +356,8 @@ function parseIndex(tokens: TokenStream, context: Context): void {
       context.raise(ErrorKind.InvalidFirstIndexNumber, indexNumberToken);
     }
     if (
-      context.sheet.tracks.length === 0 /* current track is first track */ &&
+      /* current track is first track of a file */
+      context.sheet.files.at(-1)?.tracks.length === 0 &&
       (startingTime[0] !== 0 || startingTime[1] !== 0 || startingTime[2] !== 0)
     ) {
       context.raise(ErrorKind.InvalidFirstIndexTime, indexTimeToken);
@@ -544,7 +552,7 @@ function parseTrack(tokens: TokenStream, context: Context): void {
 
   const previousTrack = state.currentTrack;
   if (previousTrack) {
-    context.sheet.tracks.push(previousTrack);
+    context.sheet.files.at(-1)?.tracks.push(previousTrack);
   }
 
   const trackNumberToken = tokens.expectString(TokenKind.Unquoted);
