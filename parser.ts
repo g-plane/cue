@@ -2,7 +2,7 @@ import { ErrorKind, ParsingError } from "./errors.ts";
 import { tokenize, TokenKind } from "./tokenizer.ts";
 import type { TokenStream, TokenUnquoted } from "./tokenizer.ts";
 import { FileType, TrackDataType } from "./types.ts";
-import type { CueSheeet, Track } from "./types.ts";
+import type { CueSheet, Track } from "./types.ts";
 
 function stripBOM(text: string): string {
   if (text.charCodeAt(0) === 0xfeff) {
@@ -35,7 +35,7 @@ interface ParserState {
 }
 
 interface Context {
-  sheet: CueSheeet;
+  sheet: CueSheet;
 
   state: ParserState;
 

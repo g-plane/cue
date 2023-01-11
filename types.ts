@@ -4,7 +4,7 @@ export interface Position {
   column: number;
 }
 
-export interface CueSheeet {
+export interface CueSheet {
   catalog?: string;
   CDTextFile?: string;
   flags?: Flags;
