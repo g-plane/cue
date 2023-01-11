@@ -289,7 +289,7 @@ describe("FLAGS command", () => {
             type: FileType.Wave,
             tracks: [
               {
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [],
                 trackNumber: 20,
               },
@@ -315,7 +315,7 @@ describe("FLAGS command", () => {
             type: FileType.Wave,
             tracks: [
               {
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [],
                 trackNumber: 20,
               },
@@ -341,7 +341,7 @@ describe("FLAGS command", () => {
             type: FileType.Wave,
             tracks: [
               {
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [],
                 trackNumber: 20,
               },
@@ -367,7 +367,7 @@ describe("FLAGS command", () => {
             type: FileType.Wave,
             tracks: [
               {
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [],
                 trackNumber: 20,
               },
@@ -395,7 +395,7 @@ describe("FLAGS command", () => {
               type: FileType.Wave,
               tracks: [
                 {
-                  dataType: TrackDataType.AUDIO,
+                  dataType: TrackDataType.Audio,
                   indexes: [],
                   trackNumber: 20,
                 },
@@ -426,7 +426,7 @@ describe("FLAGS command", () => {
           type: FileType.Wave,
           tracks: [
             {
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [],
               trackNumber: 20,
             },
@@ -457,7 +457,7 @@ describe("FLAGS command", () => {
           type: FileType.Wave,
           tracks: [
             {
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [],
               trackNumber: 20,
             },
@@ -488,7 +488,7 @@ describe("FLAGS command", () => {
           type: FileType.Wave,
           tracks: [
             {
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [],
               trackNumber: 20,
             },
@@ -519,7 +519,7 @@ describe("FLAGS command", () => {
           type: FileType.Wave,
           tracks: [
             {
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [],
               trackNumber: 20,
             },
@@ -551,7 +551,7 @@ describe("FLAGS command", () => {
           type: FileType.Wave,
           tracks: [
             {
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [],
               trackNumber: 20,
             },
@@ -582,7 +582,7 @@ describe("FLAGS command", () => {
           type: FileType.Wave,
           tracks: [
             {
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [],
               trackNumber: 20,
             },
@@ -632,7 +632,7 @@ describe("FLAGS command", () => {
           type: FileType.Wave,
           tracks: [
             {
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               trackNumber: 20,
             },
@@ -663,7 +663,7 @@ describe("FLAGS command", () => {
           type: FileType.Wave,
           tracks: [
             {
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [],
               trackNumber: 20,
             },
@@ -688,7 +688,7 @@ describe("INDEX command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType.AUDIO,
+            dataType: TrackDataType.Audio,
             indexes: [{ number: 1, startingTime: [0, 0, 0] }],
           }],
         }],
@@ -708,7 +708,7 @@ describe("INDEX command", () => {
             type: FileType.Wave,
             tracks: [{
               trackNumber: 1,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [
                 { number: 0, startingTime: [0, 0, 0] },
                 { number: 1, startingTime: [123, 45, 56] },
@@ -736,14 +736,14 @@ describe("INDEX command", () => {
             tracks: [
               {
                 trackNumber: 1,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [
                   { number: 0, startingTime: [0, 0, 0] },
                 ],
               },
               {
                 trackNumber: 2,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [
                   { number: 1, startingTime: [123, 45, 56] },
                 ],
@@ -767,7 +767,7 @@ describe("INDEX command", () => {
         type: FileType.Wave,
         tracks: [{
           trackNumber: 1,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [{ number: 2, startingTime: [0, 0, 0] }],
         }],
       }],
@@ -788,7 +788,7 @@ describe("INDEX command", () => {
         type: FileType.Wave,
         tracks: [{
           trackNumber: 1,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [{ number: 0, startingTime: [0, 0, 1] }],
         }],
       }],
@@ -809,7 +809,7 @@ describe("INDEX command", () => {
         type: FileType.Wave,
         tracks: [{
           trackNumber: 1,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [
             { number: 0, startingTime: [0, 0, 0] },
             { number: NaN, startingTime: [0, 2, 0] },
@@ -834,7 +834,7 @@ describe("INDEX command", () => {
         tracks: [
           {
             trackNumber: 1,
-            dataType: TrackDataType.AUDIO,
+            dataType: TrackDataType.Audio,
             indexes: [
               { number: 0, startingTime: [0, 0, 0] },
               { number: 2, startingTime: [0, 2, 0] },
@@ -859,7 +859,7 @@ describe("INDEX command", () => {
         type: FileType.Wave,
         tracks: [{
           trackNumber: 1,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [
             { number: 0, startingTime: [0, 0, 0] },
             { number: 100, startingTime: [0, 2, 0] },
@@ -883,7 +883,7 @@ describe("INDEX command", () => {
         type: FileType.Wave,
         tracks: [{
           trackNumber: 1,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [
             { number: 0, startingTime: [0, 0, 0] },
           ],
@@ -906,7 +906,7 @@ describe("INDEX command", () => {
         type: FileType.Wave,
         tracks: [{
           trackNumber: 1,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [
             { number: 0, startingTime: [0, 0, 0] },
             { number: 1, startingTime: [0, 0, 75] },
@@ -930,7 +930,7 @@ describe("ISRC command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType.AUDIO,
+            dataType: TrackDataType.Audio,
             indexes: [],
             isrc: "abxyz1234567",
           }],
@@ -947,7 +947,7 @@ describe("ISRC command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType.AUDIO,
+            dataType: TrackDataType.Audio,
             indexes: [],
             isrc: "ABXYZ1234567",
           }],
@@ -964,7 +964,7 @@ describe("ISRC command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType.AUDIO,
+            dataType: TrackDataType.Audio,
             indexes: [],
             isrc: "012341234567",
           }],
@@ -985,7 +985,7 @@ describe("ISRC command", () => {
         type: FileType.Wave,
         tracks: [{
           trackNumber: 1,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [],
           isrc: "abc",
         }],
@@ -1007,7 +1007,7 @@ describe("ISRC command", () => {
         type: FileType.Wave,
         tracks: [{
           trackNumber: 1,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [],
           isrc: "abcde012345678",
         }],
@@ -1029,7 +1029,7 @@ describe("ISRC command", () => {
         type: FileType.Wave,
         tracks: [{
           trackNumber: 1,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [],
           isrc: "abcdef1234567",
         }],
@@ -1062,7 +1062,7 @@ describe("ISRC command", () => {
         type: FileType.Wave,
         tracks: [{
           trackNumber: 1,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [{ number: 0, startingTime: [0, 0, 0] }],
           isrc: "ABXYZ1234567",
         }],
@@ -1093,7 +1093,7 @@ describe("PERFORMER command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType.AUDIO,
+            dataType: TrackDataType.Audio,
             indexes: [],
             performer: "abc",
           }],
@@ -1119,7 +1119,7 @@ describe("PERFORMER command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType.AUDIO,
+            dataType: TrackDataType.Audio,
             indexes: [],
             performer: "abc def",
           }],
@@ -1164,7 +1164,7 @@ describe("POSTGAP command", () => {
             type: FileType.Wave,
             tracks: [{
               trackNumber: 1,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [{ number: 0, startingTime: [0, 0, 0] }],
               postGap: [0, 2, 0],
             }],
@@ -1186,7 +1186,7 @@ describe("POSTGAP command", () => {
             type: FileType.Wave,
             tracks: [{
               trackNumber: 1,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [{ number: 0, startingTime: [0, 0, 0] }],
               postGap: [123, 45, 56],
             }],
@@ -1208,7 +1208,7 @@ describe("POSTGAP command", () => {
         type: FileType.Wave,
         tracks: [{
           trackNumber: 1,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [{ number: 0, startingTime: [0, 0, 0] }],
           postGap: [0, 1, 0],
         }],
@@ -1230,7 +1230,7 @@ describe("POSTGAP command", () => {
         type: FileType.Wave,
         tracks: [{
           trackNumber: 1,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [{ number: 0, startingTime: [0, 0, 0] }],
           postGap: [0, 0, 0],
         }],
@@ -1263,7 +1263,7 @@ describe("POSTGAP command", () => {
         type: FileType.Wave,
         tracks: [{
           trackNumber: 1,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [{ number: 0, startingTime: [0, 0, 0] }],
           postGap: [0, 2, 75],
         }],
@@ -1287,7 +1287,7 @@ describe("PREGAP command", () => {
             type: FileType.Wave,
             tracks: [{
               trackNumber: 1,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [{ number: 0, startingTime: [0, 0, 0] }],
               preGap: [0, 2, 0],
             }],
@@ -1307,7 +1307,7 @@ describe("PREGAP command", () => {
             type: FileType.Wave,
             tracks: [{
               trackNumber: 1,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [{ number: 0, startingTime: [0, 0, 0] }],
               preGap: [123, 45, 56],
             }],
@@ -1329,7 +1329,7 @@ describe("PREGAP command", () => {
         type: FileType.Wave,
         tracks: [{
           trackNumber: 1,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [{ number: 0, startingTime: [0, 0, 0] }],
           preGap: [0, 1, 0],
         }],
@@ -1351,7 +1351,7 @@ describe("PREGAP command", () => {
         type: FileType.Wave,
         tracks: [{
           trackNumber: 1,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [{ number: 0, startingTime: [0, 0, 0] }],
           preGap: [0, 0, 0],
         }],
@@ -1384,7 +1384,7 @@ describe("PREGAP command", () => {
         type: FileType.Wave,
         tracks: [{
           trackNumber: 1,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [{ number: 0, startingTime: [0, 0, 0] }],
           preGap: [0, 2, 75],
         }],
@@ -1443,7 +1443,7 @@ describe("SONGWRITER command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType.AUDIO,
+            dataType: TrackDataType.Audio,
             indexes: [],
             songWriter: "abc",
           }],
@@ -1469,7 +1469,7 @@ describe("SONGWRITER command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType.AUDIO,
+            dataType: TrackDataType.Audio,
             indexes: [],
             songWriter: "abc def",
           }],
@@ -1521,7 +1521,7 @@ describe("TITLE command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType.AUDIO,
+            dataType: TrackDataType.Audio,
             indexes: [],
             title: "abc",
           }],
@@ -1547,7 +1547,7 @@ describe("TITLE command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType.AUDIO,
+            dataType: TrackDataType.Audio,
             indexes: [],
             title: "abc def",
           }],
@@ -1590,7 +1590,7 @@ describe("TRACK command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType.AUDIO,
+            dataType: TrackDataType.Audio,
             indexes: [],
           }],
         }],
@@ -1606,7 +1606,7 @@ describe("TRACK command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType.AUDIO,
+            dataType: TrackDataType.Audio,
             indexes: [],
           }],
         }],
@@ -1622,7 +1622,7 @@ describe("TRACK command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 99,
-            dataType: TrackDataType.CDG,
+            dataType: TrackDataType.Cdg,
             indexes: [],
           }],
         }],
@@ -1638,7 +1638,7 @@ describe("TRACK command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 99,
-            dataType: TrackDataType.CDG,
+            dataType: TrackDataType.Cdg,
             indexes: [],
           }],
         }],
@@ -1654,7 +1654,7 @@ describe("TRACK command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 12,
-            dataType: TrackDataType["MODE1/2048"],
+            dataType: TrackDataType["Mode1/2048"],
             indexes: [],
           }],
         }],
@@ -1670,7 +1670,7 @@ describe("TRACK command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType["MODE1/2352"],
+            dataType: TrackDataType["Mode1/2352"],
             indexes: [],
           }],
         }],
@@ -1686,7 +1686,7 @@ describe("TRACK command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType["MODE2/2336"],
+            dataType: TrackDataType["Mode2/2336"],
             indexes: [],
           }],
         }],
@@ -1702,7 +1702,7 @@ describe("TRACK command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType["MODE2/2352"],
+            dataType: TrackDataType["Mode2/2352"],
             indexes: [],
           }],
         }],
@@ -1718,7 +1718,7 @@ describe("TRACK command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType["CDI/2336"],
+            dataType: TrackDataType["Cdi/2336"],
             indexes: [],
           }],
         }],
@@ -1734,7 +1734,7 @@ describe("TRACK command", () => {
           type: FileType.Wave,
           tracks: [{
             trackNumber: 1,
-            dataType: TrackDataType["CDI/2352"],
+            dataType: TrackDataType["Cdi/2352"],
             indexes: [],
           }],
         }],
@@ -1764,14 +1764,14 @@ FILE "" WAVE
               tracks: [
                 {
                   trackNumber: 1,
-                  dataType: TrackDataType.AUDIO,
+                  dataType: TrackDataType.Audio,
                   indexes: [],
                   performer: "pa",
                   title: "ta",
                 },
                 {
                   trackNumber: 2,
-                  dataType: TrackDataType.CDG,
+                  dataType: TrackDataType.Cdg,
                   indexes: [],
                   performer: "pb",
                   title: "tb",
@@ -1813,7 +1813,7 @@ FILE "" WAVE
         type: FileType.Wave,
         tracks: [{
           trackNumber: 0,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [],
         }],
       }],
@@ -1832,7 +1832,7 @@ FILE "" WAVE
         type: FileType.Wave,
         tracks: [{
           trackNumber: 100,
-          dataType: TrackDataType.AUDIO,
+          dataType: TrackDataType.Audio,
           indexes: [],
         }],
       }],
@@ -1854,12 +1854,12 @@ FILE "" WAVE
         tracks: [
           {
             trackNumber: 2,
-            dataType: TrackDataType.AUDIO,
+            dataType: TrackDataType.Audio,
             indexes: [],
           },
           {
             trackNumber: 4,
-            dataType: TrackDataType.AUDIO,
+            dataType: TrackDataType.Audio,
             indexes: [],
           },
         ],

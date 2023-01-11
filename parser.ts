@@ -575,21 +575,21 @@ function parseTrack(tokens: TokenStream, context: Context): void {
   const dataType = (() => {
     switch (dataTypeToken.value.toUpperCase()) {
       case "AUDIO":
-        return TrackDataType["AUDIO"];
+        return TrackDataType["Audio"];
       case "CDG":
-        return TrackDataType["CDG"];
+        return TrackDataType["Cdg"];
       case "MODE1/2048":
-        return TrackDataType["MODE1/2048"];
+        return TrackDataType["Mode1/2048"];
       case "MODE1/2352":
-        return TrackDataType["MODE1/2352"];
+        return TrackDataType["Mode1/2352"];
       case "MODE2/2336":
-        return TrackDataType["MODE2/2336"];
+        return TrackDataType["Mode2/2336"];
       case "MODE2/2352":
-        return TrackDataType["MODE2/2352"];
+        return TrackDataType["Mode2/2352"];
       case "CDI/2336":
-        return TrackDataType["CDI/2336"];
+        return TrackDataType["Cdi/2336"];
       case "CDI/2352":
-        return TrackDataType["CDI/2352"];
+        return TrackDataType["Cdi/2352"];
       default:
         return TrackDataType.Unknown;
     }

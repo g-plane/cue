@@ -59,12 +59,12 @@ export interface Track {
 export enum TrackDataType {
   /** @internal */
   Unknown,
-  "AUDIO",
-  "CDG",
-  "MODE1/2048",
-  "MODE1/2352",
-  "MODE2/2336",
-  "MODE2/2352",
-  "CDI/2336",
-  "CDI/2352",
+  Audio,
+  Cdg,
+  "Mode1/2048",
+  "Mode1/2352",
+  "Mode2/2336",
+  "Mode2/2352",
+  "Cdi/2336",
+  "Cdi/2352",
 }

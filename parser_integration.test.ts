@@ -32,42 +32,42 @@ FILE "C:\\MYAUDIO.WAV" WAVE
           tracks: [
             {
               trackNumber: 1,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [{ number: 1, startingTime: [0, 0, 0] }],
             },
             {
               trackNumber: 2,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [{ number: 1, startingTime: [5, 50, 65] }],
             },
             {
               trackNumber: 3,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [{ number: 1, startingTime: [9, 47, 50] }],
             },
             {
               trackNumber: 4,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [{ number: 1, startingTime: [15, 12, 53] }],
             },
             {
               trackNumber: 5,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [{ number: 1, startingTime: [25, 2, 40] }],
             },
             {
               trackNumber: 6,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [{ number: 1, startingTime: [27, 34, 5] }],
             },
             {
               trackNumber: 7,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [{ number: 1, startingTime: [31, 58, 53] }],
             },
             {
               trackNumber: 8,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [{ number: 1, startingTime: [35, 8, 65] }],
             },
           ],
@@ -110,7 +110,7 @@ FILE "C:\\TRACK2.MP3" MP3
             tracks: [
               {
                 trackNumber: 1,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               },
             ],
@@ -121,7 +121,7 @@ FILE "C:\\TRACK2.MP3" MP3
             tracks: [
               {
                 trackNumber: 2,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               },
             ],
@@ -132,7 +132,7 @@ FILE "C:\\TRACK2.MP3" MP3
             tracks: [
               {
                 trackNumber: 3,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               },
             ],
@@ -143,7 +143,7 @@ FILE "C:\\TRACK2.MP3" MP3
             tracks: [
               {
                 trackNumber: 4,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               },
             ],
@@ -154,7 +154,7 @@ FILE "C:\\TRACK2.MP3" MP3
             tracks: [
               {
                 trackNumber: 5,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               },
             ],
@@ -165,7 +165,7 @@ FILE "C:\\TRACK2.MP3" MP3
             tracks: [
               {
                 trackNumber: 6,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               },
             ],
@@ -209,22 +209,22 @@ FILE "C:\\TRACK2.WAV" WAVE
             tracks: [
               {
                 trackNumber: 1,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               },
               {
                 trackNumber: 2,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [5, 50, 65] }],
               },
               {
                 trackNumber: 3,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [9, 47, 50] }],
               },
               {
                 trackNumber: 4,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [15, 12, 53] }],
               },
             ],
@@ -235,22 +235,22 @@ FILE "C:\\TRACK2.WAV" WAVE
             tracks: [
               {
                 trackNumber: 5,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               },
               {
                 trackNumber: 6,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [2, 31, 40] }],
               },
               {
                 trackNumber: 7,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [6, 56, 13] }],
               },
               {
                 trackNumber: 8,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [10, 6, 25] }],
               },
             ],
@@ -287,12 +287,12 @@ FILE "C:\\MYAUDIO1.WAV" WAVE
           tracks: [
             {
               trackNumber: 1,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [{ number: 1, startingTime: [0, 0, 0] }],
             },
             {
               trackNumber: 2,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [
                 { number: 0, startingTime: [5, 49, 65] },
                 { number: 1, startingTime: [5, 50, 65] },
@@ -300,7 +300,7 @@ FILE "C:\\MYAUDIO1.WAV" WAVE
             },
             {
               trackNumber: 3,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [
                 { number: 0, startingTime: [9, 45, 50] },
                 { number: 1, startingTime: [9, 47, 50] },
@@ -308,7 +308,7 @@ FILE "C:\\MYAUDIO1.WAV" WAVE
             },
             {
               trackNumber: 4,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               indexes: [
                 { number: 0, startingTime: [15, 9, 53] },
                 { number: 1, startingTime: [15, 12, 53] },
@@ -349,7 +349,7 @@ FILE "C:\\MYAUDIO3.WAV" WAVE
             tracks: [
               {
                 trackNumber: 1,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 preGap: [0, 1, 0],
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               },
@@ -361,7 +361,7 @@ FILE "C:\\MYAUDIO3.WAV" WAVE
             tracks: [
               {
                 trackNumber: 2,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 preGap: [0, 2, 0],
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               },
@@ -373,7 +373,7 @@ FILE "C:\\MYAUDIO3.WAV" WAVE
             tracks: [
               {
                 trackNumber: 3,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 preGap: [0, 1, 0],
                 indexes: [
                   { number: 0, startingTime: [0, 0, 0] },
@@ -421,7 +421,7 @@ FILE "C:\\MYAUDIO2.WAV" WAVE
             tracks: [
               {
                 trackNumber: 1,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 isrc: "ABCDE1234567",
                 indexes: [
                   { number: 1, startingTime: [0, 0, 0] },
@@ -437,13 +437,13 @@ FILE "C:\\MYAUDIO2.WAV" WAVE
             tracks: [
               {
                 trackNumber: 2,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 isrc: "XYZZY0000000",
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               },
               {
                 trackNumber: 3,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 isrc: "123456789012",
                 indexes: [
                   { number: 0, startingTime: [3, 0, 0] },
@@ -480,7 +480,7 @@ FILE "C:\\MYDATA.ISO" BINARY
           tracks: [
             {
               trackNumber: 1,
-              dataType: TrackDataType["MODE1/2048"],
+              dataType: TrackDataType["Mode1/2048"],
               indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               postGap: [0, 2, 0],
             },
@@ -509,7 +509,7 @@ FILE "C:\\MYDATA.RAW" BINARY
           tracks: [
             {
               trackNumber: 1,
-              dataType: TrackDataType["MODE1/2352"],
+              dataType: TrackDataType["Mode1/2352"],
               indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               postGap: [0, 2, 0],
             },
@@ -547,7 +547,7 @@ FILE "C:\\MYAUDIO.WAV" WAVE
             tracks: [
               {
                 trackNumber: 1,
-                dataType: TrackDataType["MODE1/2048"],
+                dataType: TrackDataType["Mode1/2048"],
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
                 postGap: [0, 2, 0],
               },
@@ -559,18 +559,18 @@ FILE "C:\\MYAUDIO.WAV" WAVE
             tracks: [
               {
                 trackNumber: 2,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
                 preGap: [0, 2, 0],
               },
               {
                 trackNumber: 3,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [5, 50, 65] }],
               },
               {
                 trackNumber: 4,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [9, 47, 50] }],
               },
             ],
@@ -612,7 +612,7 @@ FILE "C:\\TRACK4.WAV" WAVE
             tracks: [
               {
                 trackNumber: 1,
-                dataType: TrackDataType["MODE1/2048"],
+                dataType: TrackDataType["Mode1/2048"],
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               },
             ],
@@ -623,7 +623,7 @@ FILE "C:\\TRACK4.WAV" WAVE
             tracks: [
               {
                 trackNumber: 2,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
                 preGap: [0, 2, 0],
               },
@@ -635,7 +635,7 @@ FILE "C:\\TRACK4.WAV" WAVE
             tracks: [
               {
                 trackNumber: 3,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               },
             ],
@@ -646,7 +646,7 @@ FILE "C:\\TRACK4.WAV" WAVE
             tracks: [
               {
                 trackNumber: 4,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               },
             ],
@@ -657,7 +657,7 @@ FILE "C:\\TRACK4.WAV" WAVE
             tracks: [
               {
                 trackNumber: 5,
-                dataType: TrackDataType.AUDIO,
+                dataType: TrackDataType.Audio,
                 indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               },
             ],
@@ -733,7 +733,7 @@ FILE "C:\\NIRVANA.BIN" BINARY
           tracks: [
             {
               trackNumber: 1,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               title: "Smells like teen spirit",
               indexes: [
                 { number: 0, startingTime: [0, 0, 0] },
@@ -742,7 +742,7 @@ FILE "C:\\NIRVANA.BIN" BINARY
             },
             {
               trackNumber: 2,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               title: "In bloom",
               indexes: [
                 { number: 0, startingTime: [5, 1, 67] },
@@ -751,7 +751,7 @@ FILE "C:\\NIRVANA.BIN" BINARY
             },
             {
               trackNumber: 3,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               title: "Come as you are",
               indexes: [
                 { number: 0, startingTime: [9, 16, 63] },
@@ -760,13 +760,13 @@ FILE "C:\\NIRVANA.BIN" BINARY
             },
             {
               trackNumber: 4,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               title: "Breed",
               indexes: [{ number: 1, startingTime: [12, 56, 22] }],
             },
             {
               trackNumber: 5,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               title: "Lithium",
               indexes: [
                 { number: 0, startingTime: [15, 59, 35] },
@@ -775,7 +775,7 @@ FILE "C:\\NIRVANA.BIN" BINARY
             },
             {
               trackNumber: 6,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               title: "Polly",
               indexes: [
                 { number: 0, startingTime: [20, 16, 38] },
@@ -784,7 +784,7 @@ FILE "C:\\NIRVANA.BIN" BINARY
             },
             {
               trackNumber: 7,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               title: "Territorial pissings",
               indexes: [
                 { number: 0, startingTime: [23, 11, 17] },
@@ -793,19 +793,19 @@ FILE "C:\\NIRVANA.BIN" BINARY
             },
             {
               trackNumber: 8,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               title: "Drain you",
               indexes: [{ number: 1, startingTime: [25, 37, 10] }],
             },
             {
               trackNumber: 9,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               title: "Lounge act",
               indexes: [{ number: 1, startingTime: [29, 21, 2] }],
             },
             {
               trackNumber: 10,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               title: "Stay away",
               indexes: [
                 { number: 0, startingTime: [31, 57, 40] },
@@ -814,7 +814,7 @@ FILE "C:\\NIRVANA.BIN" BINARY
             },
             {
               trackNumber: 11,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               title: "On a plain",
               indexes: [
                 { number: 0, startingTime: [35, 29, 40] },
@@ -823,7 +823,7 @@ FILE "C:\\NIRVANA.BIN" BINARY
             },
             {
               trackNumber: 12,
-              dataType: TrackDataType.AUDIO,
+              dataType: TrackDataType.Audio,
               title: "Something in the way",
               indexes: [{ number: 0, startingTime: [38, 44, 55] }],
             },
