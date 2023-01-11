@@ -242,6 +242,12 @@ function parseFile(
     context.raise(ErrorKind.UnknownFileType, fileTypeToken);
   }
 
+  const previousTrack = context.state.currentTrack;
+  if (previousTrack) {
+    context.sheet.files.at(-1)?.tracks.push(previousTrack);
+    context.state.currentTrack = null;
+  }
+
   context.sheet.files.push({
     name: fileNameToken.value,
     type: fileType,
