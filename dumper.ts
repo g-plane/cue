@@ -17,21 +17,21 @@ export function dump(sheet: CueSheet, options: DumperOptions = {}): string {
     output += createLine(`CATALOG ${sheet.catalog}`);
   }
   if (sheet.CDTextFile) {
-    output += createLine(`CDTEXTFILE "${sheet.CDTextFile}"`);
+    output += createLine(`CDTEXTFILE ${quote(sheet.CDTextFile)}`);
   }
   if (sheet.title) {
-    output += createLine(`TITLE "${sheet.title}"`);
+    output += createLine(`TITLE ${quote(sheet.title)}`);
   }
   if (sheet.performer) {
-    output += createLine(`PERFORMER "${sheet.performer}"`);
+    output += createLine(`PERFORMER ${quote(sheet.performer)}`);
   }
   if (sheet.songWriter) {
-    output += createLine(`SONGWRITER "${sheet.songWriter}"`);
+    output += createLine(`SONGWRITER ${quote(sheet.songWriter)}`);
   }
 
   output += sheet.files.map((file) => {
     let fileOutput = createLine(
-      `FILE "${file.name}" ${FileType[file.type].toUpperCase()}`,
+      `FILE ${quote(file.name)} ${FileType[file.type].toUpperCase()}`,
     );
 
     indentLevel += 1;
@@ -44,13 +44,13 @@ export function dump(sheet: CueSheet, options: DumperOptions = {}): string {
 
       indentLevel += 1;
       if (track.title) {
-        trackOutput += createLine(`TITLE "${track.title}"`);
+        trackOutput += createLine(`TITLE ${quote(track.title)}`);
       }
       if (track.performer) {
-        trackOutput += createLine(`PERFORMER "${track.performer}"`);
+        trackOutput += createLine(`PERFORMER ${quote(track.performer)}`);
       }
       if (track.songWriter) {
-        trackOutput += createLine(`SONGWRITER "${track.songWriter}"`);
+        trackOutput += createLine(`SONGWRITER ${quote(track.songWriter)}`);
       }
       if (track.isrc) {
         trackOutput += createLine(`ISRC ${track.isrc}`);
@@ -94,4 +94,8 @@ function stringifyNumber(value: number): string {
 function stringifyTime(time: [number, number, number]): string {
   return stringifyNumber(time[0]) + ":" + stringifyNumber(time[1]) + ":" +
     stringifyNumber(time[2]);
+}
+
+function quote(text: string): string {
+  return `"${text.replaceAll('"', '\\"')}"`;
 }
