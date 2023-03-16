@@ -1,4 +1,4 @@
-# deno-cue
+# cue
 
 ## References
 
