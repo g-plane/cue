@@ -295,6 +295,183 @@ describe('FLAGS command', () => {
       'FILE "foo.wav" WAVE\n  TRACK 01 AUDIO\n    FLAGS DCP 4CH PRE SCMS\n'
     )
   })
+
+  it('with index', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType.Audio,
+              flags: {
+                digitalCopyPermitted: true,
+                fourChannelAudio: true,
+                preEmphasisEnabled: true,
+                scms: true,
+              },
+              indexes: [
+                {
+                  number: 1,
+                  startingTime: [0, 0, 0],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe(
+      'FILE "foo.wav" WAVE\n  TRACK 01 AUDIO\n    FLAGS DCP 4CH PRE SCMS\n    INDEX 01 00:00:00\n'
+    )
+  })
+})
+
+describe('INDEX command', () => {
+  it('basic', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType.Audio,
+              indexes: [
+                {
+                  number: 1,
+                  startingTime: [0, 0, 0],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe(
+      'FILE "foo.wav" WAVE\n  TRACK 01 AUDIO\n    INDEX 01 00:00:00\n'
+    )
+  })
+
+  it('index number', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType.Audio,
+              indexes: [
+                {
+                  number: 23,
+                  startingTime: [0, 0, 0],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe(
+      'FILE "foo.wav" WAVE\n  TRACK 01 AUDIO\n    INDEX 23 00:00:00\n'
+    )
+  })
+
+  it('starting time', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType.Audio,
+              indexes: [
+                {
+                  number: 1,
+                  startingTime: [2, 15, 72],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe(
+      'FILE "foo.wav" WAVE\n  TRACK 01 AUDIO\n    INDEX 01 02:15:72\n'
+    )
+  })
+
+  it('multiple indexes', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType.Audio,
+              indexes: [
+                {
+                  number: 1,
+                  startingTime: [0, 0, 0],
+                },
+                {
+                  number: 2,
+                  startingTime: [12, 5, 62],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe(
+      'FILE "foo.wav" WAVE\n  TRACK 01 AUDIO\n    INDEX 01 00:00:00\n    INDEX 02 12:05:62\n'
+    )
+  })
+})
+
+describe('ISRC command', () => {
+  it('basic', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType.Audio,
+              isrc: 'ABCDE1234567',
+              indexes: [
+                {
+                  number: 1,
+                  startingTime: [0, 0, 0],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe(
+      'FILE "foo.wav" WAVE\n  TRACK 01 AUDIO\n    ISRC ABCDE1234567\n    INDEX 01 00:00:00\n'
+    )
+  })
 })
 
 describe('PERFORMER command', () => {
@@ -314,6 +491,89 @@ describe('PERFORMER command', () => {
       comments: [],
     }
     expect(dump(sheet)).toBe('PERFORMER "foo\\"bar"\n')
+  })
+
+  it('within track', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType.Audio,
+              performer: 'foo',
+              indexes: [],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe(
+      'FILE "foo.wav" WAVE\n  TRACK 01 AUDIO\n    PERFORMER "foo"\n'
+    )
+  })
+})
+
+describe('POSTGAP command', () => {
+  it('basic', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType.Audio,
+              postGap: [4, 12, 68],
+              indexes: [
+                {
+                  number: 1,
+                  startingTime: [0, 0, 0],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe(
+      'FILE "foo.wav" WAVE\n  TRACK 01 AUDIO\n    INDEX 01 00:00:00\n    POSTGAP 04:12:68\n'
+    )
+  })
+})
+
+describe('PREGAP command', () => {
+  it('basic', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType.Audio,
+              preGap: [1, 5, 23],
+              indexes: [
+                {
+                  number: 1,
+                  startingTime: [1, 6, 0],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe(
+      'FILE "foo.wav" WAVE\n  TRACK 01 AUDIO\n    PREGAP 01:05:23\n    INDEX 01 01:06:00\n'
+    )
   })
 })
 
@@ -335,6 +595,29 @@ describe('SONGWRITER command', () => {
     }
     expect(dump(sheet)).toBe('SONGWRITER "foo\\"bar"\n')
   })
+
+  it('within track', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType.Audio,
+              songWriter: 'foo',
+              indexes: [],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe(
+      'FILE "foo.wav" WAVE\n  TRACK 01 AUDIO\n    SONGWRITER "foo"\n'
+    )
+  })
 })
 
 describe('TITLE command', () => {
@@ -354,5 +637,210 @@ describe('TITLE command', () => {
       comments: [],
     }
     expect(dump(sheet)).toBe('TITLE "foo\\"bar"\n')
+  })
+
+  it('within track', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType.Audio,
+              title: 'foo',
+              indexes: [],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe(
+      'FILE "foo.wav" WAVE\n  TRACK 01 AUDIO\n    TITLE "foo"\n'
+    )
+  })
+})
+
+describe('TRACK command', () => {
+  it('track number', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 25,
+              dataType: TrackDataType.Audio,
+              indexes: [],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe('FILE "foo.wav" WAVE\n  TRACK 25 AUDIO\n')
+  })
+
+  it('audio', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType.Audio,
+              indexes: [],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe('FILE "foo.wav" WAVE\n  TRACK 01 AUDIO\n')
+  })
+
+  it('cdg', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType.Cdg,
+              indexes: [],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe('FILE "foo.wav" WAVE\n  TRACK 01 CDG\n')
+  })
+
+  it('mode1/2048', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType['Mode1/2048'],
+              indexes: [],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe('FILE "foo.wav" WAVE\n  TRACK 01 MODE1/2048\n')
+  })
+
+  it('mode1/2352', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType['Mode1/2352'],
+              indexes: [],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe('FILE "foo.wav" WAVE\n  TRACK 01 MODE1/2352\n')
+  })
+
+  it('mode2/2336', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType['Mode2/2336'],
+              indexes: [],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe('FILE "foo.wav" WAVE\n  TRACK 01 MODE2/2336\n')
+  })
+
+  it('mode2/2352', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType['Mode2/2352'],
+              indexes: [],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe('FILE "foo.wav" WAVE\n  TRACK 01 MODE2/2352\n')
+  })
+
+  it('cdi/2336', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType['Cdi/2336'],
+              indexes: [],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe('FILE "foo.wav" WAVE\n  TRACK 01 CDI/2336\n')
+  })
+
+  it('cdi/2352', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType['Cdi/2352'],
+              indexes: [],
+            },
+          ],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe('FILE "foo.wav" WAVE\n  TRACK 01 CDI/2352\n')
   })
 })
