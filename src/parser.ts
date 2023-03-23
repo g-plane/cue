@@ -305,11 +305,13 @@ function parseFlags(tokens: TokenStream, context: Context): void {
     context.raise(ErrorKind.NoFlags, tokens.getCurrentLocation())
   }
 
-  context.sheet.flags = {
-    digitalCopyPermitted,
-    fourChannelAudio,
-    preEmphasisEnabled,
-    scms,
+  if (context.state.currentTrack) {
+    context.state.currentTrack.flags = {
+      digitalCopyPermitted,
+      fourChannelAudio,
+      preEmphasisEnabled,
+      scms,
+    }
   }
 }
 
@@ -538,6 +540,7 @@ function parseTrack(tokens: TokenStream, context: Context): void {
   state.parsedCommand &= ~ParsedCommand.TITLE
   state.parsedCommand &= ~ParsedCommand.PERFORMER
   state.parsedCommand &= ~ParsedCommand.SONGWRITER
+  state.parsedCommand &= ~ParsedCommand.FLAGS
   state.parsedCommand &= ~ParsedCommand.INDEX
   state.parsedCommand &= ~ParsedCommand.PREGAP
   state.parsedCommand &= ~ParsedCommand.POSTGAP

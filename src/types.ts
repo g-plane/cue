@@ -7,7 +7,6 @@ export interface Position {
 export interface CueSheet {
   catalog?: string
   CDTextFile?: string
-  flags?: Flags
   title?: string
   performer?: string
   songWriter?: string
@@ -50,6 +49,7 @@ export interface Track {
   title?: string
   performer?: string
   songWriter?: string
+  flags?: Flags
   indexes: Index[]
   isrc?: string
   preGap?: [number, number, number]

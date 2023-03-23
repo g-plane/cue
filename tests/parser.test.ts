@@ -294,12 +294,6 @@ describe('FLAGS command', () => {
   it('parse valid FLAGS command', () => {
     expect(parse(`FILE "" WAVE\nTRACK 20 AUDIO\nFLAGS DCP`)).toEqual({
       sheet: {
-        flags: {
-          digitalCopyPermitted: true,
-          fourChannelAudio: false,
-          preEmphasisEnabled: false,
-          scms: false,
-        },
         files: [
           {
             name: '',
@@ -307,6 +301,12 @@ describe('FLAGS command', () => {
             tracks: [
               {
                 dataType: TrackDataType.Audio,
+                flags: {
+                  digitalCopyPermitted: true,
+                  fourChannelAudio: false,
+                  preEmphasisEnabled: false,
+                  scms: false,
+                },
                 indexes: [],
                 trackNumber: 20,
               },
@@ -320,12 +320,6 @@ describe('FLAGS command', () => {
 
     expect(parse(`FILE "" WAVE\nTRACK 20 AUDIO\nFLAGS 4CH\n`)).toEqual({
       sheet: {
-        flags: {
-          digitalCopyPermitted: false,
-          fourChannelAudio: true,
-          preEmphasisEnabled: false,
-          scms: false,
-        },
         files: [
           {
             name: '',
@@ -333,6 +327,12 @@ describe('FLAGS command', () => {
             tracks: [
               {
                 dataType: TrackDataType.Audio,
+                flags: {
+                  digitalCopyPermitted: false,
+                  fourChannelAudio: true,
+                  preEmphasisEnabled: false,
+                  scms: false,
+                },
                 indexes: [],
                 trackNumber: 20,
               },
@@ -346,12 +346,6 @@ describe('FLAGS command', () => {
 
     expect(parse(`FILE "" WAVE\nTRACK 20 AUDIO\nFLAGS PRE\n`)).toEqual({
       sheet: {
-        flags: {
-          digitalCopyPermitted: false,
-          fourChannelAudio: false,
-          preEmphasisEnabled: true,
-          scms: false,
-        },
         files: [
           {
             name: '',
@@ -359,6 +353,12 @@ describe('FLAGS command', () => {
             tracks: [
               {
                 dataType: TrackDataType.Audio,
+                flags: {
+                  digitalCopyPermitted: false,
+                  fourChannelAudio: false,
+                  preEmphasisEnabled: true,
+                  scms: false,
+                },
                 indexes: [],
                 trackNumber: 20,
               },
@@ -372,12 +372,6 @@ describe('FLAGS command', () => {
 
     expect(parse(`FILE "" WAVE\nTRACK 20 AUDIO\nFLAGS SCMS\n`)).toEqual({
       sheet: {
-        flags: {
-          digitalCopyPermitted: false,
-          fourChannelAudio: false,
-          preEmphasisEnabled: false,
-          scms: true,
-        },
         files: [
           {
             name: '',
@@ -385,6 +379,12 @@ describe('FLAGS command', () => {
             tracks: [
               {
                 dataType: TrackDataType.Audio,
+                flags: {
+                  digitalCopyPermitted: false,
+                  fourChannelAudio: false,
+                  preEmphasisEnabled: false,
+                  scms: true,
+                },
                 indexes: [],
                 trackNumber: 20,
               },
@@ -400,12 +400,6 @@ describe('FLAGS command', () => {
       parse(`FILE "" WAVE\nTRACK 20 AUDIO\nFLAGS DCP PRE SCMS 4CH\n`)
     ).toEqual({
       sheet: {
-        flags: {
-          digitalCopyPermitted: true,
-          fourChannelAudio: true,
-          preEmphasisEnabled: true,
-          scms: true,
-        },
         files: [
           {
             name: '',
@@ -413,6 +407,12 @@ describe('FLAGS command', () => {
             tracks: [
               {
                 dataType: TrackDataType.Audio,
+                flags: {
+                  digitalCopyPermitted: true,
+                  fourChannelAudio: true,
+                  preEmphasisEnabled: true,
+                  scms: true,
+                },
                 indexes: [],
                 trackNumber: 20,
               },
@@ -431,12 +431,6 @@ describe('FLAGS command', () => {
       errors: [error],
     } = parse(`FILE "" WAVE\nTRACK 20 AUDIO\nFLAGS ABC\n`)
     expect(sheet).toEqual({
-      flags: {
-        digitalCopyPermitted: false,
-        fourChannelAudio: false,
-        preEmphasisEnabled: false,
-        scms: false,
-      },
       files: [
         {
           name: '',
@@ -444,6 +438,12 @@ describe('FLAGS command', () => {
           tracks: [
             {
               dataType: TrackDataType.Audio,
+              flags: {
+                digitalCopyPermitted: false,
+                fourChannelAudio: false,
+                preEmphasisEnabled: false,
+                scms: false,
+              },
               indexes: [],
               trackNumber: 20,
             },
@@ -463,12 +463,6 @@ describe('FLAGS command', () => {
       errors: [error],
     } = parse(`FILE "" WAVE\nTRACK 20 AUDIO\nFLAGS SCMS ABC\n`)
     expect(sheet).toEqual({
-      flags: {
-        digitalCopyPermitted: false,
-        fourChannelAudio: false,
-        preEmphasisEnabled: false,
-        scms: true,
-      },
       files: [
         {
           name: '',
@@ -476,6 +470,12 @@ describe('FLAGS command', () => {
           tracks: [
             {
               dataType: TrackDataType.Audio,
+              flags: {
+                digitalCopyPermitted: false,
+                fourChannelAudio: false,
+                preEmphasisEnabled: false,
+                scms: true,
+              },
               indexes: [],
               trackNumber: 20,
             },
@@ -495,12 +495,6 @@ describe('FLAGS command', () => {
       errors: [error],
     } = parse(`FILE "" WAVE\nTRACK 20 AUDIO\nFLAGS pre\n`)
     expect(sheet).toEqual({
-      flags: {
-        digitalCopyPermitted: false,
-        fourChannelAudio: false,
-        preEmphasisEnabled: false,
-        scms: false,
-      },
       files: [
         {
           name: '',
@@ -508,6 +502,12 @@ describe('FLAGS command', () => {
           tracks: [
             {
               dataType: TrackDataType.Audio,
+              flags: {
+                digitalCopyPermitted: false,
+                fourChannelAudio: false,
+                preEmphasisEnabled: false,
+                scms: false,
+              },
               indexes: [],
               trackNumber: 20,
             },
@@ -527,12 +527,6 @@ describe('FLAGS command', () => {
       errors: [error],
     } = parse(`FILE "" WAVE\nTRACK 20 AUDIO\nFLAGS 4CH PRE SCMS DCP 4CH\n`)
     expect(sheet).toEqual({
-      flags: {
-        digitalCopyPermitted: true,
-        fourChannelAudio: true,
-        preEmphasisEnabled: true,
-        scms: true,
-      },
       files: [
         {
           name: '',
@@ -540,6 +534,12 @@ describe('FLAGS command', () => {
           tracks: [
             {
               dataType: TrackDataType.Audio,
+              flags: {
+                digitalCopyPermitted: true,
+                fourChannelAudio: true,
+                preEmphasisEnabled: true,
+                scms: true,
+              },
               indexes: [],
               trackNumber: 20,
             },
@@ -559,13 +559,6 @@ describe('FLAGS command', () => {
       errors: [error],
     } = parse(`FILE "" WAVE\nTRACK 20 AUDIO\nFLAGS 4CH\nFLAGS DCP\n`)
     expect(sheet).toEqual({
-      flags: {
-        digitalCopyPermitted: true,
-        // latter `FLAGS` command will override former `FLAGS` command
-        fourChannelAudio: false,
-        preEmphasisEnabled: false,
-        scms: false,
-      },
       files: [
         {
           name: '',
@@ -573,6 +566,13 @@ describe('FLAGS command', () => {
           tracks: [
             {
               dataType: TrackDataType.Audio,
+              flags: {
+                digitalCopyPermitted: true,
+                // latter `FLAGS` command will override former `FLAGS` command
+                fourChannelAudio: false,
+                preEmphasisEnabled: false,
+                scms: false,
+              },
               indexes: [],
               trackNumber: 20,
             },
@@ -592,12 +592,6 @@ describe('FLAGS command', () => {
       errors: [error],
     } = parse(`FILE "" WAVE\nTRACK 20 AUDIO\nFLAGS\n`)
     expect(sheet).toEqual({
-      flags: {
-        digitalCopyPermitted: false,
-        fourChannelAudio: false,
-        preEmphasisEnabled: false,
-        scms: false,
-      },
       files: [
         {
           name: '',
@@ -605,6 +599,12 @@ describe('FLAGS command', () => {
           tracks: [
             {
               dataType: TrackDataType.Audio,
+              flags: {
+                digitalCopyPermitted: false,
+                fourChannelAudio: false,
+                preEmphasisEnabled: false,
+                scms: false,
+              },
               indexes: [],
               trackNumber: 20,
             },
@@ -624,12 +624,6 @@ describe('FLAGS command', () => {
       errors: [error],
     } = parse(`FLAGS PRE\n`)
     expect(sheet).toEqual({
-      flags: {
-        digitalCopyPermitted: false,
-        fourChannelAudio: false,
-        preEmphasisEnabled: true,
-        scms: false,
-      },
       files: [],
       comments: [],
     })
@@ -644,12 +638,6 @@ describe('FLAGS command', () => {
       errors: [error],
     } = parse(`FILE "" WAVE\nTRACK 20 AUDIO\nINDEX 01 00:00:00\nFLAGS PRE\n`)
     expect(sheet).toEqual({
-      flags: {
-        digitalCopyPermitted: false,
-        fourChannelAudio: false,
-        preEmphasisEnabled: true,
-        scms: false,
-      },
       files: [
         {
           name: '',
@@ -657,6 +645,12 @@ describe('FLAGS command', () => {
           tracks: [
             {
               dataType: TrackDataType.Audio,
+              flags: {
+                digitalCopyPermitted: false,
+                fourChannelAudio: false,
+                preEmphasisEnabled: true,
+                scms: false,
+              },
               indexes: [{ number: 1, startingTime: [0, 0, 0] }],
               trackNumber: 20,
             },
@@ -676,12 +670,6 @@ describe('FLAGS command', () => {
       errors: [error],
     } = parse(`FILE "" WAVE\nTRACK 20 AUDIO\nFLAGS "PRE"\n`)
     expect(sheet).toEqual({
-      flags: {
-        digitalCopyPermitted: false,
-        fourChannelAudio: false,
-        preEmphasisEnabled: false,
-        scms: false,
-      },
       files: [
         {
           name: '',
@@ -689,6 +677,12 @@ describe('FLAGS command', () => {
           tracks: [
             {
               dataType: TrackDataType.Audio,
+              flags: {
+                digitalCopyPermitted: false,
+                fourChannelAudio: false,
+                preEmphasisEnabled: false,
+                scms: false,
+              },
               indexes: [],
               trackNumber: 20,
             },
