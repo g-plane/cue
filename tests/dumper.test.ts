@@ -41,23 +41,33 @@ describe('CDTEXTFILE command', () => {
   })
 })
 
-describe('TITLE command', () => {
+describe('FILE command', () => {
   it('basic', () => {
     const sheet: CueSheet = {
-      title: 'foo',
-      files: [],
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [],
+        },
+      ],
       comments: [],
     }
-    expect(dump(sheet)).toBe('TITLE "foo"\n')
+    expect(dump(sheet)).toBe('FILE "foo.wav" WAVE\n')
   })
 
   it('escape', () => {
     const sheet: CueSheet = {
-      title: 'foo"bar',
-      files: [],
+      files: [
+        {
+          name: 'foo"bar.wav',
+          type: FileType.Wave,
+          tracks: [],
+        },
+      ],
       comments: [],
     }
-    expect(dump(sheet)).toBe('TITLE "foo\\"bar"\n')
+    expect(dump(sheet)).toBe('FILE "foo\\"bar.wav" WAVE\n')
   })
 })
 
@@ -101,32 +111,22 @@ describe('SONGWRITER command', () => {
   })
 })
 
-describe('FILE command', () => {
+describe('TITLE command', () => {
   it('basic', () => {
     const sheet: CueSheet = {
-      files: [
-        {
-          name: 'foo.wav',
-          type: FileType.Wave,
-          tracks: [],
-        },
-      ],
+      title: 'foo',
+      files: [],
       comments: [],
     }
-    expect(dump(sheet)).toBe('FILE "foo.wav" WAVE\n')
+    expect(dump(sheet)).toBe('TITLE "foo"\n')
   })
 
   it('escape', () => {
     const sheet: CueSheet = {
-      files: [
-        {
-          name: 'foo"bar.wav',
-          type: FileType.Wave,
-          tracks: [],
-        },
-      ],
+      title: 'foo"bar',
+      files: [],
       comments: [],
     }
-    expect(dump(sheet)).toBe('FILE "foo\\"bar.wav" WAVE\n')
+    expect(dump(sheet)).toBe('TITLE "foo\\"bar"\n')
   })
 })
