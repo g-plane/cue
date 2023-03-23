@@ -38,7 +38,7 @@ export function dump(sheet: CueSheet, options: DumperOptions = {}): string {
       fileOutput += file.tracks
         .map((track) => {
           let trackOutput = createLine(
-            `TRACK ${track.trackNumber} ${TrackDataType[
+            `TRACK ${stringifyNumber(track.trackNumber)} ${TrackDataType[
               track.dataType
             ].toUpperCase()}`
           )
