@@ -59,6 +59,26 @@ export function dump(sheet: CueSheet, options: DumperOptions = {}): string {
           if (track.preGap) {
             trackOutput += createLine(`PREGAP ${stringifyTime(track.preGap)}`)
           }
+
+          if (track.flags) {
+            const flags: string[] = []
+            if (track.flags.digitalCopyPermitted) {
+              flags.push('DCP')
+            }
+            if (track.flags.fourChannelAudio) {
+              flags.push('4CH')
+            }
+            if (track.flags.preEmphasisEnabled) {
+              flags.push('PRE')
+            }
+            if (track.flags.scms) {
+              flags.push('SCMS')
+            }
+            if (flags.length > 0) {
+              trackOutput += createLine(`FLAGS ${flags.join(' ')}`)
+            }
+          }
+
           trackOutput += track.indexes
             .map((index) => {
               return createLine(
