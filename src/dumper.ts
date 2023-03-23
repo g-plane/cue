@@ -56,9 +56,6 @@ export function dump(sheet: CueSheet, options: DumperOptions = {}): string {
           if (track.isrc) {
             trackOutput += createLine(`ISRC ${track.isrc}`)
           }
-          if (track.preGap) {
-            trackOutput += createLine(`PREGAP ${stringifyTime(track.preGap)}`)
-          }
 
           if (track.flags) {
             const flags: string[] = []
@@ -79,6 +76,9 @@ export function dump(sheet: CueSheet, options: DumperOptions = {}): string {
             }
           }
 
+          if (track.preGap) {
+            trackOutput += createLine(`PREGAP ${stringifyTime(track.preGap)}`)
+          }
           trackOutput += track.indexes
             .map((index) => {
               return createLine(
