@@ -42,7 +42,49 @@ describe('CDTEXTFILE command', () => {
 })
 
 describe('FILE command', () => {
-  it('basic', () => {
+  it('binary', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Binary,
+          tracks: [],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe('FILE "foo.wav" BINARY\n')
+  })
+
+  it('motorola', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Motorola,
+          tracks: [],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe('FILE "foo.wav" MOTOROLA\n')
+  })
+
+  it('aiff', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Aiff,
+          tracks: [],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe('FILE "foo.wav" AIFF\n')
+  })
+
+  it('wave', () => {
     const sheet: CueSheet = {
       files: [
         {
@@ -54,6 +96,20 @@ describe('FILE command', () => {
       comments: [],
     }
     expect(dump(sheet)).toBe('FILE "foo.wav" WAVE\n')
+  })
+
+  it('mp3', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Mp3,
+          tracks: [],
+        },
+      ],
+      comments: [],
+    }
+    expect(dump(sheet)).toBe('FILE "foo.wav" MP3\n')
   })
 
   it('escape', () => {
