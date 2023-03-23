@@ -844,3 +844,165 @@ describe('TRACK command', () => {
     expect(dump(sheet)).toBe('FILE "foo.wav" WAVE\n  TRACK 01 CDI/2352\n')
   })
 })
+
+describe('dumper options', () => {
+  describe('lineBreak', () => {
+    it('LF', () => {
+      const sheet: CueSheet = {
+        files: [
+          {
+            name: 'foo.wav',
+            type: FileType.Wave,
+            tracks: [
+              {
+                trackNumber: 1,
+                dataType: TrackDataType.Audio,
+                indexes: [],
+              },
+            ],
+          },
+        ],
+        comments: [],
+      }
+      expect(dump(sheet, { lineBreak: '\n' })).toBe(
+        'FILE "foo.wav" WAVE\n  TRACK 01 AUDIO\n'
+      )
+    })
+
+    it('CRLF', () => {
+      const sheet: CueSheet = {
+        files: [
+          {
+            name: 'foo.wav',
+            type: FileType.Wave,
+            tracks: [
+              {
+                trackNumber: 1,
+                dataType: TrackDataType.Audio,
+                indexes: [],
+              },
+            ],
+          },
+        ],
+        comments: [],
+      }
+      expect(dump(sheet, { lineBreak: '\r\n' })).toBe(
+        'FILE "foo.wav" WAVE\r\n  TRACK 01 AUDIO\r\n'
+      )
+    })
+  })
+
+  describe('indentKind', () => {
+    it('space', () => {
+      const sheet: CueSheet = {
+        files: [
+          {
+            name: 'foo.wav',
+            type: FileType.Wave,
+            tracks: [
+              {
+                trackNumber: 1,
+                dataType: TrackDataType.Audio,
+                indexes: [],
+              },
+            ],
+          },
+        ],
+        comments: [],
+      }
+      expect(dump(sheet, { indentKind: ' ' })).toBe(
+        'FILE "foo.wav" WAVE\n  TRACK 01 AUDIO\n'
+      )
+    })
+
+    it('tab', () => {
+      const sheet: CueSheet = {
+        files: [
+          {
+            name: 'foo.wav',
+            type: FileType.Wave,
+            tracks: [
+              {
+                trackNumber: 1,
+                dataType: TrackDataType.Audio,
+                indexes: [],
+              },
+            ],
+          },
+        ],
+        comments: [],
+      }
+      expect(dump(sheet, { indentKind: '\t' })).toBe(
+        'FILE "foo.wav" WAVE\n\tTRACK 01 AUDIO\n'
+      )
+    })
+
+    it('tab with overrided indentSize', () => {
+      const sheet: CueSheet = {
+        files: [
+          {
+            name: 'foo.wav',
+            type: FileType.Wave,
+            tracks: [
+              {
+                trackNumber: 1,
+                dataType: TrackDataType.Audio,
+                indexes: [],
+              },
+            ],
+          },
+        ],
+        comments: [],
+      }
+      expect(dump(sheet, { indentKind: '\t', indentSize: 4 })).toBe(
+        'FILE "foo.wav" WAVE\n\tTRACK 01 AUDIO\n'
+      )
+    })
+  })
+
+  describe('indentSize', () => {
+    it('2', () => {
+      const sheet: CueSheet = {
+        files: [
+          {
+            name: 'foo.wav',
+            type: FileType.Wave,
+            tracks: [
+              {
+                trackNumber: 1,
+                dataType: TrackDataType.Audio,
+                indexes: [],
+              },
+            ],
+          },
+        ],
+        comments: [],
+      }
+      expect(dump(sheet, { indentSize: 2 })).toBe(
+        'FILE "foo.wav" WAVE\n  TRACK 01 AUDIO\n'
+      )
+    })
+
+    it('4', () => {
+      const sheet: CueSheet = {
+        files: [
+          {
+            name: 'foo.wav',
+            type: FileType.Wave,
+            tracks: [
+              {
+                trackNumber: 1,
+                dataType: TrackDataType.Audio,
+                indexes: [],
+              },
+            ],
+          },
+        ],
+        comments: [],
+      }
+      expect(dump(sheet, { indentSize: 4 })).toBe(
+        'FILE "foo.wav" WAVE\n    TRACK 01 AUDIO\n'
+      )
+    })
+  })
+})

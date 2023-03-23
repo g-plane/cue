@@ -103,10 +103,12 @@ export function dump(sheet: CueSheet, options: DumperOptions = {}): string {
     .join(lineBreak)
 
   function createLine(text: string): string {
-    const indent =
-      indentKind === '\t'
-        ? indentKind
-        : indentKind.repeat(indentLevel * indentSize)
+    let indent
+    if (indentKind === '\t') {
+      indent = indentLevel > 0 ? indentKind : ''
+    } else {
+      indent = indentKind.repeat(indentLevel * indentSize)
+    }
     return indent + text + lineBreak
   }
 
