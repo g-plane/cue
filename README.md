@@ -68,7 +68,7 @@ There're some limitations:
 
 #### `lineBreak` option
 
-Only `\n` or `\r\n` is allowed. Default value is `\n`.
+Only `'\n'` or `'\r\n'` is allowed. Default value is `'\n'`.
 
 ```javascript
 import { dump } from '@gplane/cue'
@@ -81,7 +81,7 @@ const text = dump(sheet, { lineBreak: '\r\n' })
 
 #### `indentKind` option
 
-Only `\t` or ` ` is allowed. Default value is ` `.
+Only `'\t'` or `' '` is allowed. Default value is `' '`.
 
 ```javascript
 import { dump } from '@gplane/cue'
