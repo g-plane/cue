@@ -57,6 +57,12 @@ interface ParserOptions {
   fatal?: boolean
   checkAtLeastOneTrack?: boolean
   strictFileCommandPosition?: boolean
+  /** If `true`, it disallows performer string with more that 80 characters. */
+  strictPerformerLength?: boolean
+  /** If `true`, it disallows song writer string with more that 80 characters. */
+  strictSongWriterLength?: boolean
+  /** If `true`, it disallows title string with more that 80 characters. */
+  strictTitleLength?: boolean
 }
 
 export function parse(source: string, options: ParserOptions = {}) {
@@ -404,7 +410,7 @@ function parsePerformer(tokens: TokenStream, context: Context): void {
     return
   }
 
-  if (token.value.length > 80) {
+  if (context.options.strictPerformerLength && token.value.length > 80) {
     context.raise(ErrorKind.TooLongPerformer, token)
   }
 
@@ -505,7 +511,7 @@ function parseSongWriter(tokens: TokenStream, context: Context): void {
   }
 
   const songWriter = token.value
-  if (songWriter.length > 80) {
+  if (context.options.strictSongWriterLength && songWriter.length > 80) {
     context.raise(ErrorKind.TooLongSongWriter, token)
   }
 
@@ -524,7 +530,7 @@ function parseTitle(tokens: TokenStream, context: Context): void {
   }
 
   const title = token.value
-  if (title.length > 80) {
+  if (context.options.strictTitleLength && title.length > 80) {
     context.raise(ErrorKind.TooLongTitle, token)
   }
 

@@ -1245,12 +1245,24 @@ describe('PERFORMER command', () => {
     })
   })
 
+  it('long performer', () => {
+    const performer = 'x'.repeat(81)
+    expect(parse(`PERFORMER ${performer}`)).toEqual({
+      sheet: {
+        comments: [],
+        files: [],
+        performer,
+      },
+      errors: [],
+    })
+  })
+
   it('performer too long', () => {
     const performer = 'x'.repeat(81)
     const {
       sheet,
       errors: [error],
-    } = parse(`PERFORMER ${performer}`)
+    } = parse(`PERFORMER ${performer}`, { strictPerformerLength: true })
     expect(sheet).toEqual({
       comments: [],
       files: [],
@@ -1660,12 +1672,24 @@ describe('SONGWRITER command', () => {
     })
   })
 
+  it('long song writer', () => {
+    const songWriter = 'x'.repeat(81)
+    expect(parse(`SONGWRITER ${songWriter}`)).toEqual({
+      sheet: {
+        comments: [],
+        files: [],
+        songWriter,
+      },
+      errors: [],
+    })
+  })
+
   it('song writer too long', () => {
     const songWriter = 'x'.repeat(81)
     const {
       sheet,
       errors: [error],
-    } = parse(`SONGWRITER ${songWriter}`)
+    } = parse(`SONGWRITER ${songWriter}`, { strictSongWriterLength: true })
     expect(sheet).toEqual({
       comments: [],
       files: [],
@@ -1749,12 +1773,24 @@ describe('TITLE command', () => {
     })
   })
 
-  it('song writer too long', () => {
+  it('long title', () => {
+    const title = 'x'.repeat(81)
+    expect(parse(`TITLE ${title}`)).toEqual({
+      sheet: {
+        comments: [],
+        files: [],
+        title,
+      },
+      errors: [],
+    })
+  })
+
+  it('title too long if option enabled', () => {
     const title = 'x'.repeat(81)
     const {
       sheet,
       errors: [error],
-    } = parse(`TITLE ${title}`)
+    } = parse(`TITLE ${title}`, { strictTitleLength: true })
     expect(sheet).toEqual({
       comments: [],
       files: [],

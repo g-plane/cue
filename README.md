@@ -48,6 +48,36 @@ import { parse } from '@gplane/cue'
 const { sheet, errors } = parse('', { strictFileCommandPosition: true })
 ```
 
+#### `strictPerformerLength` option
+
+Performer string with more that 80 characters will be treated as an error if `strictPerformerLength` option is set to `true`.
+
+```javascript
+import { parse } from '@gplane/cue'
+
+const { sheet, errors } = parse('', { strictPerformerLength: true })
+```
+
+#### `strictSongWriterLength` option
+
+Song writer string with more that 80 characters will be treated as an error if `strictSongWriterLength` option is set to `true`.
+
+```javascript
+import { parse } from '@gplane/cue'
+
+const { sheet, errors } = parse('', { strictSongWriterLength: true })
+```
+
+#### `strictTitleLength` option
+
+Title string with more that 80 characters will be treated as an error if `strictTitleLength` option is set to `true`.
+
+```javascript
+import { parse } from '@gplane/cue'
+
+const { sheet, errors } = parse('', { strictTitleLength: true })
+```
+
 ### Dumping
 
 ```javascript
