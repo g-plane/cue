@@ -1,6 +1,10 @@
 import { ErrorKind } from './errors.js'
 import type { Position } from './types.js'
 
+function stripBOM(text: string): string {
+  return text.charCodeAt(0) === 0xfeff ? text.slice(1) : text
+}
+
 export enum TokenKind {
   EOF,
   Unquoted,
@@ -47,6 +51,8 @@ export function tokenize(
   source: string,
   onError: (kind: ErrorKind, errorAt: Position) => void
 ) {
+  source = stripBOM(source)
+
   const len = source.length
   let offset = 0,
     line = 1,

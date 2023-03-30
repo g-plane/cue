@@ -7,14 +7,6 @@ import {
 } from './tokenizer.js'
 import { FileType, TrackDataType, type CueSheet, type Track } from './types.js'
 
-function stripBOM(text: string): string {
-  if (text.charCodeAt(0) === 0xfeff) {
-    return text.slice(1)
-  }
-
-  return text
-}
-
 enum ParsedCommand {
   CATALOG = 1,
   CDTEXTFILE = 1 << 1,
@@ -76,7 +68,7 @@ export function parse(source: string, options: ParserOptions = {}) {
     }
   }
 
-  const tokens = tokenize(stripBOM(source), raise)
+  const tokens = tokenize(source, raise)
 
   const context: Context = {
     sheet: {
