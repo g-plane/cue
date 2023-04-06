@@ -3,7 +3,8 @@
   "compilerOptions": {
     "module": "ESNext",
     "target": "ES2022",
-    "noUncheckedIndexedAccess": false
+    "noUncheckedIndexedAccess": false,
+    "outDir": "dist"
   },
   "include": ["src"]
 }
