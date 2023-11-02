@@ -49,7 +49,7 @@ export interface TokenStream {
 
 export function tokenize(
   source: string,
-  onError: (kind: ErrorKind, errorAt: Position) => void
+  onError: (kind: ErrorKind, errorAt: Position) => void,
 ) {
   source = stripBOM(source)
 

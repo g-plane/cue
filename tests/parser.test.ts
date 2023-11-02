@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { ErrorKind, FileType, TrackDataType, parse } from '../src'
 
 describe('CATALOG command', () => {

@@ -1,6 +1,6 @@
-import { describe, it, test, expect } from 'vitest'
-import { type CueSheet, FileType, TrackDataType } from '../src/types'
+import { describe, expect, it, test } from 'vitest'
 import { dump } from '../src/dumper'
+import { type CueSheet, FileType, TrackDataType } from '../src/types'
 
 test('empty cue sheet', () => {
   const sheet: CueSheet = {

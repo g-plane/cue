@@ -1,6 +1,6 @@
-import { test, expect } from 'vitest'
-import { FileType, TrackDataType } from '../src/types'
+import { expect, test } from 'vitest'
 import { dump } from '../src/dumper'
+import { FileType, TrackDataType } from '../src/types'
 
 test('example 1', () => {
   expect(

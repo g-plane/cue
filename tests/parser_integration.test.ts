@@ -1,4 +1,4 @@
-import { test, expect } from 'vitest'
+import { expect, test } from 'vitest'
 import { FileType, TrackDataType, parse } from '../src'
 
 test('example 1', () => {

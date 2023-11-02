@@ -1,11 +1,11 @@
 import { ErrorKind, ParsingError } from './errors.js'
 import {
-  tokenize,
   TokenKind,
   type TokenStream,
   type TokenUnquoted,
+  tokenize,
 } from './tokenizer.js'
-import { FileType, TrackDataType, type CueSheet, type Track } from './types.js'
+import { type CueSheet, FileType, type Track, TrackDataType } from './types.js'
 
 enum ParsedCommand {
   CATALOG = 1,
@@ -41,7 +41,7 @@ interface Context {
    */
   raise(
     kind: ErrorKind,
-    errorAt: { pos: number; line: number; column: number }
+    errorAt: { pos: number, line: number, column: number },
   ): void
 }
 
