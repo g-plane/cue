@@ -1,10 +1,5 @@
 import { ErrorKind, ParsingError } from './errors.js'
-import {
-  TokenKind,
-  type TokenStream,
-  type TokenUnquoted,
-  tokenize,
-} from './tokenizer.js'
+import { TokenKind, type TokenStream, type TokenUnquoted, tokenize } from './tokenizer.js'
 import { type CueSheet, FileType, type Track, TrackDataType } from './types.js'
 
 enum ParsedCommand {

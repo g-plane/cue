@@ -1011,7 +1011,7 @@ describe('comments', () => {
   it('comments only', () => {
     const sheet: CueSheet = {
       files: [],
-      comments: ['DATE 2024', 'GENRE anime']
+      comments: ['DATE 2024', 'GENRE anime'],
     }
     expect(dump(sheet)).toBe('REM DATE 2024\nREM GENRE anime\n')
   })
@@ -1031,13 +1031,14 @@ describe('comments', () => {
           ],
         },
       ],
-      comments: ['DATE 2024', 'GENRE anime']
+      comments: ['DATE 2024', 'GENRE anime'],
     }
     expect(dump(sheet)).toBe(
       `REM DATE 2024
 REM GENRE anime
 FILE "foo.wav" WAVE
   TRACK 01 AUDIO
-`)
+`
+    )
   })
 })
