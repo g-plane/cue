@@ -1006,3 +1006,38 @@ describe('dumper options', () => {
     })
   })
 })
+
+describe('comments', () => {
+  it('comments only', () => {
+    const sheet: CueSheet = {
+      files: [],
+      comments: ['DATE 2024', 'GENRE anime']
+    }
+    expect(dump(sheet)).toBe('REM DATE 2024\nREM GENRE anime\n')
+  })
+
+  it('with other fields', () => {
+    const sheet: CueSheet = {
+      files: [
+        {
+          name: 'foo.wav',
+          type: FileType.Wave,
+          tracks: [
+            {
+              trackNumber: 1,
+              dataType: TrackDataType.Audio,
+              indexes: [],
+            },
+          ],
+        },
+      ],
+      comments: ['DATE 2024', 'GENRE anime']
+    }
+    expect(dump(sheet)).toBe(
+      `REM DATE 2024
+REM GENRE anime
+FILE "foo.wav" WAVE
+  TRACK 01 AUDIO
+`)
+  })
+})

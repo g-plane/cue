@@ -10,7 +10,7 @@ export function dump(sheet: CueSheet, options: DumperOptions = {}): string {
   const { lineBreak = '\n', indentKind = ' ', indentSize = 2 } = options
 
   let indentLevel = 0
-  let output = ''
+  let output = sheet.comments.map(comment => createLine(`REM ${comment}`)).join('')
 
   if (sheet.catalog) {
     output += createLine(`CATALOG ${sheet.catalog}`)
