@@ -38,10 +38,9 @@ export function dump(sheet: CueSheet, options: DumperOptions = {}): string {
       fileOutput += file.tracks
         .map((track) => {
           let trackOutput = createLine(
-            `TRACK ${stringifyNumber(track.trackNumber)} ${
-              TrackDataType[
-                track.dataType
-              ].toUpperCase()
+            `TRACK ${stringifyNumber(track.trackNumber)} ${TrackDataType[
+              track.dataType
+            ].toUpperCase()
             }`
           )
 
@@ -84,10 +83,9 @@ export function dump(sheet: CueSheet, options: DumperOptions = {}): string {
           trackOutput += track.indexes
             .map((index) => {
               return createLine(
-                `INDEX ${stringifyNumber(index.number)} ${
-                  stringifyTime(
-                    index.startingTime
-                  )
+                `INDEX ${stringifyNumber(index.number)} ${stringifyTime(
+                  index.startingTime
+                )
                 }`
               )
             })
